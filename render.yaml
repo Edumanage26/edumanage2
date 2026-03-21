@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: edumanage2
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:application
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
