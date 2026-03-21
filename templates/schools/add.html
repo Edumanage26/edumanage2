@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}Add School{% endblock %}
+{% block page_title %}Add School{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+<div class="col-md-8">
+<div class="card">
+<div class="card-header">
+<i class="bi bi-building-add"></i> Add New School
+</div>
+<div class="card-body p-4">
+<form method="POST" enctype="multipart/form-data">
+
+<div class="mb-3">
+<label class="form-label fw-bold">
+School Name <span class="text-danger">*</span>
+</label>
+<input type="text" name="name" class="form-control"
+placeholder="Enter school name" required/>
+</div>
+
+<div class="mb-3">
+<label class="form-label fw-bold">Address</label>
+<textarea name="address" class="form-control"
+rows="2" placeholder="School address"></textarea>
+</div>
+
+<div class="row g-3">
+<div class="col-md-6 mb-3">
+<label class="form-label fw-bold">Phone Number</label>
+<input type="text" name="phone" class="form-control"
+placeholder="e.g. 08012345678"/>
+</div>
+<div class="col-md-6 mb-3">
+<label class="form-label fw-bold">Email Address</label>
+<input type="email" name="email" class="form-control"
+placeholder="school@email.com"/>
+</div>
+</div>
+
+<div class="mb-4">
+<label class="form-label fw-bold">School Logo</label>
+<input type="file" name="logo" class="form-control"
+accept="image/*"/>
+<div class="form-text">PNG or JPG. Max 2MB.</div>
+</div>
+
+<div class="d-flex gap-2">
+<button type="submit" class="btn btn-primary">
+<i class="bi bi-save me-1"></i> Add School
+</button>
+<a href="/schools" class="btn btn-outline-secondary">Cancel</a>
+</div>
+
+</form>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% block title %}Mark Attendance{% endblock %}
+{% block page_title %}Mark Attendance{% endblock %}
+{% block content %}
+
+<!-- Load Students Form -->
+<div class="card mb-4">
+<div class="card-header">
+<i class="bi bi-calendar-plus"></i> Select Class and Date
+</div>
+<div class="card-body p-4">
+<form method="POST">
+<input type="hidden" name="load_students" value="1"/>
+<div class="row g-3 align-items-end">
+<div class="col-md-4">
+<label class="form-label fw-bold">Class</label>
+<select name="class_id" class="form-select" required>
+<option value="">-- Select Class --</option>
+{% for cls in classes %}
+<option value="{{ cls['id'] }}"
+{{ 'selected' if selected_class and selected_class['id'] == cls['id'] }}>
+{% if cls['school_name'] is defined %}
+{{ cls['school_name'] }} —
+{% endif %}
+{{ cls['name'] }}
+</option>
+{% endfor %}
+</select>
+</div>
+<div class="col-md-3">
+<label class="form-label fw-bold">Date</label>
+<input type="date" name="date" class="form-control"
+value="{{ selected_date }}"/>
+</div>
+<div class="col-md-3">
+<button type="submit" class="btn btn-primary w-100">
+<i class="bi bi-search me-1"></i> Load Students
+</button>
+</div>
+</div>
+</form>
+</div>
+</div>
+
+<!-- Students Attendance Form -->
+{% if students %}
+<div class="card">
+<div class="card-header d-flex justify-content-between align-items-center">
+<span>
+<i class="bi bi-people"></i>
+{{ selected_class['name'] }} —
+{{ selected_date }} —
+{{ students|length }} Students
+</span>
+<div class="d-flex gap-2">
+<button type="button" onclick="markAll('Present')"
+style="background:#ECFDF5;color:#059669;border:1px solid #BBF7D0;
+border-radius:7px;padding:5px 12px;font-size:.8rem;font-weight:600;
+cursor:pointer;">
+✅ All Present
+</button>
+<button type="button" onclick="markAll('Absent')"
+style="background:#FEF2F2;color:#DC2626;border:1px solid #FECACA;
+border-radius:7px;padding:5px 12px;font-size:.8rem;font-weight:600;
+cursor:pointer;">
+❌ All Absent
+</button>
+</div>
+</div>
+<div class="card-body p-0">
+<form method="POST">
+<input type="hidden" name="save_attendance" value="1"/>
+<input type="hidden" name="class_id" value="{{ selected_class['id'] }}"/>
+<input type="hidden" name="date" value="{{ selected_date }}"/>
+<div class="table-responsive">
+<table class="table mb-0">
+<thead>
+<tr>
+<th>#</th>
+<th>Student</th>
+<th>Admission No.</th>
+<th style="text-align:center;">Present</th>
+<th style="text-align:center;">Absent</th>
+</tr>
+</thead>
+<tbody>
+{% for s in students %}
+<tr>
+<td class="text-muted">{{ loop.index }}</td>
+<td>
+<div class="d-flex align-items-center gap-2">
+{% if s['photo_url'] %}
+<img src="{{ s['photo_url'] }}"
+style="width:32px;height:32px;border-radius:8px;
+object-fit:cover;"/>
+{% elif s['photo'] %}
+<img src="/static/uploads/photos/{{ s['photo'] }}"
+style="width:32px;height:32px;border-radius:8px;
+object-fit:cover;"/>
+{% else %}
+<div style="width:32px;height:32px;border-radius:8px;
+background:linear-gradient(135deg,#4F46E5,#818CF8);
+display:flex;align-items:center;justify-content:center;
+color:#fff;font-weight:700;font-size:.72rem;">
+{{ s['first_name'][0] }}{{ s['last_name'][0] }}
+</div>
+{% endif %}
+<span style="font-weight:600;font-size:.85rem;">
+{{ s['first_name'] }} {{ s['last_name'] }}
+</span>
+</div>
+</td>
+<td class="text-muted">{{ s['admission_no'] or '---' }}</td>
+<td style="text-align:center;">
+<input type="radio"
+name="status_{{ s['id'] }}"
+value="Present"
+class="form-check-input status-radio"
+data-id="{{ s['id'] }}"
+style="width:20px;height:20px;cursor:pointer;"
+{{ 'checked' if existing.get(s['id']) == 'Present'
+or not existing.get(s['id']) }}/>
+</td>
+<td style="text-align:center;">
+<input type="radio"
+name="status_{{ s['id'] }}"
+value="Absent"
+class="form-check-input status-radio"
+data-id="{{ s['id'] }}"
+style="width:20px;height:20px;cursor:pointer;"
+{{ 'checked' if existing.get(s['id']) == 'Absent' }}/>
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+<div class="p-3 border-top">
+<button type="submit" class="btn btn-primary">
+<i class="bi bi-save me-1"></i>
+Save Attendance for {{ students|length }} Students
+</button>
+<a href="/attendance" class="btn btn-outline-secondary ms-2">
+Cancel
+</a>
+</div>
+</form>
+</div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function markAll(status) {
+  document.querySelectorAll('.status-radio').forEach(function(radio) {
+    if (radio.value === status) {
+      radio.checked = true;
+    }
+  });
+}
+</script>
+{% endblock %}
+

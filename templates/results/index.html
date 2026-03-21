@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% block title %}Results{% endblock %}
+{% block page_title %}Results{% endblock %}
+{% block content %}
+
+<div class="card">
+<div class="card-header">
+<i class="bi bi-bar-chart"></i> Select Class to Manage Results
+</div>
+<div class="card-body p-4">
+<div class="row g-3 mb-4">
+<div class="col-md-4">
+<label class="form-label fw-bold">Term</label>
+<select id="term_select" class="form-select">
+{% for t in terms %}
+<option value="{{ t }}">{{ t }}</option>
+{% endfor %}
+</select>
+</div>
+<div class="col-md-4">
+<label class="form-label fw-bold">Session</label>
+<select id="session_select" class="form-select">
+{% for s in sessions %}
+<option value="{{ s }}">{{ s }}</option>
+{% endfor %}
+</select>
+</div>
+</div>
+
+<div class="table-responsive">
+<table class="table mb-0">
+<thead>
+<tr>
+<th>#</th>
+<th>Class</th>
+{% if session.get('role') == 'super_admin' %}
+<th>School</th>
+{% endif %}
+<th>Actions</th>
+</tr>
+</thead>
+<tbody>
+{% for cls in classes %}
+<tr>
+<td class="text-muted">{{ loop.index }}</td>
+<td style="font-weight:700;">{{ cls['name'] }}</td>
+{% if session.get('role') == 'super_admin' %}
+<td class="text-muted">{{ cls['school_name'] }}</td>
+{% endif %}
+<td>
+<div class="d-flex gap-2">
+<a href="#"
+onclick="goToResults({{ cls['id'] }}, 'enter')"
+style="background:#EEF2FF;color:#4F46E5;
+border-radius:7px;padding:5px 12px;
+text-decoration:none;font-size:.8rem;font-weight:600;">
+<i class="bi bi-pencil-square me-1"></i>Enter Results
+</a>
+<a href="#"
+onclick="goToResults({{ cls['id'] }}, 'subjects')"
+style="background:#ECFDF5;color:#059669;
+border-radius:7px;padding:5px 12px;
+text-decoration:none;font-size:.8rem;font-weight:600;">
+<i class="bi bi-book me-1"></i>Subjects
+</a>
+<a href="#"
+onclick="goToResults({{ cls['id'] }}, 'reportcard')"
+style="background:#FFFBEB;color:#D97706;
+border-radius:7px;padding:5px 12px;
+text-decoration:none;font-size:.8rem;font-weight:600;">
+<i class="bi bi-file-text me-1"></i>Report Card
+</a>
+</div>
+</td>
+</tr>
+{% else %}
+<tr>
+<td colspan="4" class="text-center py-5">
+<i class="bi bi-grid d-block mb-2"
+style="font-size:2.5rem;opacity:.15;"></i>
+<span class="text-muted">No classes found.</span>
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function goToResults(classId, action) {
+  var term    = document.getElementById('term_select').value;
+  var session = document.getElementById('session_select').value;
+  if (action === 'enter') {
+    window.location.href = '/results/enter/' + classId +
+      '?term=' + encodeURIComponent(term) +
+      '&session=' + encodeURIComponent(session);
+  } else if (action === 'subjects') {
+    window.location.href = '/results/subjects/' + classId;
+  } else if (action === 'reportcard') {
+    window.location.href = '/results/reportcard/' + classId +
+      '?term=' + encodeURIComponent(term) +
+      '&session=' + encodeURIComponent(session);
+  }
+}
+</script>
+{% endblock %}

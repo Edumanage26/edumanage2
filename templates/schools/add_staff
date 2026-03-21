@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}Add Staff{% endblock %}
+{% block page_title %}Add Staff{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+<div class="col-md-7">
+<div class="card">
+<div class="card-header">
+<i class="bi bi-person-plus"></i> Add Staff to {{ school['name'] }}
+</div>
+<div class="card-body p-4">
+<form method="POST">
+
+<div class="mb-3">
+<label class="form-label fw-bold">
+Full Name <span class="text-danger">*</span>
+</label>
+<input type="text" name="name" class="form-control"
+placeholder="Enter staff full name" required/>
+</div>
+
+<div class="mb-3">
+<label class="form-label fw-bold">
+Email Address <span class="text-danger">*</span>
+</label>
+<input type="email" name="email" class="form-control"
+placeholder="staff@email.com" required/>
+</div>
+
+<div class="mb-4">
+<label class="form-label fw-bold">Role</label>
+<select name="role" class="form-select">
+<option value="school_admin">School Admin</option>
+<option value="teacher">Teacher</option>
+<option value="accounts_officer">Accounts Officer</option>
+</select>
+</div>
+
+<div style="background:#FFFBEB;border:1px solid #FDE68A;
+border-radius:8px;padding:12px 16px;margin-bottom:20px;
+font-size:.82rem;color:#92400E;">
+<i class="bi bi-info-circle me-1"></i>
+Default password for new staff is <strong>Admin@1234</strong>.
+They can change it after login.
+</div>
+
+<div class="d-flex gap-2">
+<button type="submit" class="btn btn-primary">
+<i class="bi bi-save me-1"></i> Add Staff
+</button>
+<a href="/schools/view/{{ school['id'] }}"
+class="btn btn-outline-secondary">Cancel</a>
+</div>
+
+</form>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}
+

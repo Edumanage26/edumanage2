@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block title %}School Fees{% endblock %}
+{% block page_title %}School Fees{% endblock %}
+{% block content %}
+
+<!-- Stats -->
+<div class="row g-3 mb-4">
+<div class="col-md-4">
+<div class="kpi-card">
+<div class="kpi-icon" style="background:#ECFDF5;">
+<i class="bi bi-cash-coin" style="color:#059669;"></i>
+</div>
+<div class="kpi-value" style="color:#059669;font-size:1.5rem;">
+N{{ "{:,.0f}".format(fee_total['total'] or 0) }}
+</div>
+<div class="kpi-label">Total Fees Collected</div>
+</div>
+</div>
+</div>
+
+<!-- Action Buttons -->
+<div class="d-flex gap-2 mb-4">
+<a href="/fees/pay"
+style="background:#4F46E5;color:#fff;border-radius:8px;
+padding:8px 20px;text-decoration:none;font-size:.85rem;
+font-weight:600;display:flex;align-items:center;gap:8px;">
+<i class="bi bi-cash-coin"></i> Record Payment
+</a>
+<a href="/fees/structure"
+style="background:#059669;color:#fff;border-radius:8px;
+padding:8px 20px;text-decoration:none;font-size:.85rem;
+font-weight:600;display:flex;align-items:center;gap:8px;">
+<i class="bi bi-gear"></i> Fee Structure
+</a>
+<a href="/fees/report"
+style="background:#0284C7;color:#fff;border-radius:8px;
+padding:8px 20px;text-decoration:none;font-size:.85rem;
+font-weight:600;display:flex;align-items:center;gap:8px;">
+<i class="bi bi-table"></i> Fee Report
+</a>
+</div>
+
+<!-- Recent Payments -->
+<div class="card">
+<div class="card-header">
+<i class="bi bi-clock-history"></i> Recent Payments
+</div>
+<div class="card-body p-0">
+<div class="table-responsive">
+<table class="table mb-0">
+<thead>
+<tr>
+<th>#</th>
+<th>Student</th>
+<th>Class</th>
+<th>Amount Paid</th>
+<th>Date</th>
+</tr>
+</thead>
+<tbody>
+{% for p in recent_payments %}
+<tr>
+<td class="text-muted">{{ loop.index }}</td>
+<td style="font-weight:600;">
+{{ p['first_name'] }} {{ p['last_name'] }}
+</td>
+<td>
+<span style="background:#EEF2FF;color:#4F46E5;
+padding:3px 10px;border-radius:20px;
+font-size:.75rem;font-weight:600;">
+{{ p['class_name'] }}
+</span>
+</td>
+<td>
+<span style="font-weight:700;color:#059669;">
+N{{ "{:,.2f}".format(p['amount_paid']) }}
+</span>
+</td>
+<td class="text-muted">{{ p['payment_date'] or '---' }}</td>
+</tr>
+{% else %}
+<tr>
+<td colspan="5" class="text-center py-5">
+<i class="bi bi-cash-coin d-block mb-2"
+style="font-size:2.5rem;opacity:.15;"></i>
+<span class="text-muted">No payments recorded yet.</span><br>
+<a href="/fees/pay" class="btn btn-primary btn-sm mt-3">
+Record First Payment
+</a>
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</div>
+</div>
+{% endblock %}
+

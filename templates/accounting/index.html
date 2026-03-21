@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% block title %}Accounting{% endblock %}
+{% block page_title %}Accounting{% endblock %}
+{% block content %}
+
+<!-- Summary Cards -->
+<div class="row g-3 mb-4">
+<div class="col-md-4">
+<div class="kpi-card">
+<div class="kpi-icon" style="background:#ECFDF5;">
+<i class="bi bi-graph-up" style="color:#059669;"></i>
+</div>
+<div class="kpi-value" style="color:#059669;font-size:1.4rem;">
+N{{ "{:,.0f}".format(summary['income'] or 0) }}
+</div>
+<div class="kpi-label">Total Income</div>
+</div>
+</div>
+<div class="col-md-4">
+<div class="kpi-card">
+<div class="kpi-icon" style="background:#FEF2F2;">
+<i class="bi bi-graph-down" style="color:#DC2626;"></i>
+</div>
+<div class="kpi-value" style="color:#DC2626;font-size:1.4rem;">
+N{{ "{:,.0f}".format(summary['expense'] or 0) }}
+</div>
+<div class="kpi-label">Total Expenses</div>
+</div>
+</div>
+<div class="col-md-4">
+<div class="kpi-card">
+<div class="kpi-icon" style="background:#EEF2FF;">
+<i class="bi bi-wallet2" style="color:#4F46E5;"></i>
+</div>
+<div class="kpi-value" style="color:#4F46E5;font-size:1.4rem;">
+N{{ "{:,.0f}".format((summary['income'] or 0) - (summary['expense'] or 0)) }}
+</div>
+<div class="kpi-label">Balance</div>
+</div>
+</div>
+</div>
+
+<div class="row g-4">
+<!-- Record Form -->
+<div class="col-md-5">
+<div class="card">
+<div class="card-header">
+<i class="bi bi-plus-circle"></i> Record Transaction
+</div>
+<div class="card-body p-4">
+<form method="POST">
+
+{% if session.get('role') == 'super_admin' %}
+<div class="mb-3">
+<label class="form-label fw-bold">School</label>
+<select name="school_id" class="form-select">
+<option value="">-- Select School --</option>
+{% for sch in schools %}
+<option value="{{ sch['id'] }}">{{ sch['name'] }}</option>
+{% endfor %}
+</select>
+</div>
+{% endif %}
+
+<div class="mb-3">
+<label class="form-label fw-bold">Type</label>
+<div class="d-flex gap-2">
+<div class="form-check">
+<input type="radio" name="type" value="Income"
+class="form-check-input" id="income" checked/>
+<label class="form-check-label fw-bold"
+style="color:#059669;" for="income">
+Income
+</label>
+</div>
+<div class="form-check ms-3">
+<input type="radio" name="type" value="Expense"
+class="form-check-input" id="expense"/>
+<label class="form-check-label fw-bold"
+style="color:#DC2626;" for="expense">
+Expense
+</label>
+</div>
+</div>
+</div>
+
+<div class="mb-3">
+<label class="form-label fw-bold">Category</label>
+<input type="text" name="category" class="form-control"
+placeholder="e.g. School Fees, Salary, Utilities"
+required/>
+</div>
+
+<div class="mb-3">
+<label class="form-label fw-bold">Amount (N)</label>
+<input type="number" name="amount" class="form-control"
+placeholder="e.g. 50000" min="0" step="100" required/>
+</div>
+
+<div class="mb-3">
+<label class="form-label fw-bold">Description</label>
+<textarea name="description" class="form-control"
+rows="2"
+placeholder="Brief description of transaction"></textarea>
+</div>
+
+<div class="mb-4">
+<label class="form-label fw-bold">Date</label>
+<input type="date" name="date" class="form-control"
+value="{{ today }}"/>
+</div>
+
+<button type="submit" class="btn btn-primary w-100">
+<i class="bi bi-save me-1"></i> Record Transaction
+</button>
+</form>
+</div>
+</div>
+</div>
+
+<!-- Records Table -->
+<div class="col-md-7">
+<div class="card">
+<div class="card-header">
+<i class="bi bi-journal-text"></i> Recent Transactions
+</div>
+<div class="card-body p-0">
+<div class="table-responsive">
+<table class="table mb-0">
+<thead>
+<tr>
+<th>#</th>
+<th>Type</th>
+<th>Category</th>
+<th>Amount</th>
+<th>Date</th>
+</tr>
+</thead>
+<tbody>
+{% for rec in records %}
+<tr>
+<td class="text-muted">{{ loop.index }}</td>
+<td>
+{% if rec['type'] == 'Income' %}
+<span style="background:#ECFDF5;color:#059669;
+padding:3px 10px;border-radius:20px;
+font-size:.75rem;font-weight:700;">Income</span>
+{% else %}
+<span style="background:#FEF2F2;color:#DC2626;
+padding:3px 10px;border-radius:20px;
+font-size:.75rem;font-weight:700;">Expense</span>
+{% endif %}
+</td>
+<td style="font-weight:600;">{{ rec['category'] }}</td>
+<td>
+<span style="font-weight:700;
+color:{% if rec['type'] == 'Income' %}#059669{% else %}#DC2626{% endif %};">
+N{{ "{:,.2f}".format(rec['amount']) }}
+</span>
+</td>
+<td class="text-muted">{{ rec['date'] or '---' }}</td>
+</tr>
+{% else %}
+<tr>
+<td colspan="5" class="text-center py-5">
+<i class="bi bi-journal d-block mb-2"
+style="font-size:2.5rem;opacity:.15;"></i>
+<span class="text-muted">No transactions yet.</span>
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+{% endblock %}

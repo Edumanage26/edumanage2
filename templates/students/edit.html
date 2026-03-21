@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% block title %}Edit Student{% endblock %}
+{% block page_title %}Edit Student{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+<div class="col-md-8">
+<div class="card">
+<div class="card-header">
+<i class="bi bi-pencil"></i> Edit Student
+</div>
+<div class="card-body p-4">
+<form method="POST" enctype="multipart/form-data">
+
+<div class="row g-3">
+<div class="col-md-6 mb-3">
+<label class="form-label fw-bold">
+First Name <span class="text-danger">*</span>
+</label>
+<input type="text" name="first_name" class="form-control"
+value="{{ student['first_name'] }}" required/>
+</div>
+<div class="col-md-6 mb-3">
+<label class="form-label fw-bold">
+Last Name <span class="text-danger">*</span>
+</label>
+<input type="text" name="last_name" class="form-control"
+value="{{ student['last_name'] }}" required/>
+</div>
+</div>
+
+<div class="row g-3">
+<div class="col-md-6 mb-3">
+<label class="form-label fw-bold">Admission Number</label>
+<input type="text" name="admission_no" class="form-control"
+value="{{ student['admission_no'] or '' }}"/>
+</div>
+<div class="col-md-6 mb-3">
+<label class="form-label fw-bold">Class</label>
+<select name="class_id" class="form-select">
+<option value="">-- Select Class --</option>
+{% for cls in classes %}
+<option value="{{ cls['id'] }}"
+{{ 'selected' if student['class_id'] == cls['id'] }}>
+{{ cls['name'] }}
+</option>
+{% endfor %}
+</select>
+</div>
+</div>
+
+<div class="row g-3">
+<div class="col-md-6 mb-3">
+<label class="form-label fw-bold">Gender</label>
+<select name="gender" class="form-select">
+<option value="">-- Select Gender --</option>
+<option value="Male"
+{{ 'selected' if student['gender'] == 'Male' }}>Male</option>
+<option value="Female"
+{{ 'selected' if student['gender'] == 'Female' }}>Female</option>
+</select>
+</div>
+<div class="col-md-6 mb-3">
+<label class="form-label fw-bold">Date of Birth</label>
+<input type="date" name="date_of_birth" class="form-control"
+value="{{ student['date_of_birth'] or '' }}"/>
+</div>
+</div>
+
+<div class="row g-3">
+<div class="col-md-6 mb-3">
+<label class="form-label fw-bold">Parent Phone</label>
+<input type="text" name="parent_phone" class="form-control"
+value="{{ student['parent_phone'] or '' }}"/>
+</div>
+<div class="col-md-6 mb-3">
+<label class="form-label fw-bold">Parent Email</label>
+<input type="email" name="parent_email" class="form-control"
+value="{{ student['parent_email'] or '' }}"/>
+</div>
+</div>
+
+<div class="mb-3">
+<label class="form-label fw-bold">Address</label>
+<textarea name="address" class="form-control"
+rows="2">{{ student['address'] or '' }}</textarea>
+</div>
+
+<div class="mb-4">
+<label class="form-label fw-bold">Passport Photo</label>
+{% if student['photo_url'] %}
+<div class="mb-2">
+<img src="{{ student['photo_url'] }}"
+style="width:60px;height:60px;border-radius:8px;
+object-fit:cover;border:2px solid #E2E8F0;"/>
+<small class="text-muted ms-2">Current photo</small>
+</div>
+{% elif student['photo'] %}
+<div class="mb-2">
+<img src="/static/uploads/photos/{{ student['photo'] }}"
+style="width:60px;height:60px;border-radius:8px;
+object-fit:cover;border:2px solid #E2E8F0;"/>
+<small class="text-muted ms-2">Current photo</small>
+</div>
+{% endif %}
+<input type="file" name="photo" class="form-control"
+accept="image/*"/>
+<div class="form-text">Leave empty to keep current photo.</div>
+</div>
+
+<div class="d-flex gap-2">
+<button type="submit" class="btn btn-primary">
+<i class="bi bi-save me-1"></i> Save Changes
+</button>
+<a href="/students" class="btn btn-outline-secondary">Cancel</a>
+</div>
+
+</form>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}
+

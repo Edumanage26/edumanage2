@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% block title %}Attendance Report{% endblock %}
+{% block page_title %}Attendance Report{% endblock %}
+{% block content %}
+
+<!-- Filter Form -->
+<div class="card mb-4">
+<div class="card-header">
+<i class="bi bi-funnel"></i> Filter Attendance Report
+</div>
+<div class="card-body p-4">
+<form method="GET" class="row g-3 align-items-end">
+<div class="col-md-3">
+<label class="form-label fw-bold">Class</label>
+<select name="class_id" class="form-select">
+<option value="">-- Select Class --</option>
+{% for cls in classes %}
+<option value="{{ cls['id'] }}"
+{{ 'selected' if selected_class == cls['id']|string }}>
+{% if cls['school_name'] is defined %}
+{{ cls['school_name'] }} —
+{% endif %}
+{{ cls['name'] }}
+</option>
+{% endfor %}
+</select>
+</div>
+<div class="col-md-3">
+<label class="form-label fw-bold">Start Date</label>
+<input type="date" name="start_date" class="form-control"
+value="{{ start_date }}"/>
+</div>
+<div class="col-md-3">
+<label class="form-label fw-bold">End Date</label>
+<input type="date" name="end_date" class="form-control"
+value="{{ end_date }}"/>
+</div>
+<div class="col-md-3">
+<button type="submit" class="btn btn-primary w-100">
+<i class="bi bi-search me-1"></i> Generate Report
+</button>
+</div>
+</form>
+</div>
+</div>
+
+<!-- Report Table -->
+{% if report_data %}
+<div class="card">
+<div class="card-header d-flex justify-content-between align-items-center">
+<span>
+<i class="bi bi-table"></i> Attendance Report
+</span>
+<a href="/export/attendance?class_id={{ selected_class }}&start_date={{ start_date }}&end_date={{ end_date }}"
+style="background:#059669;color:#fff;border-radius:8px;
+padding:5px 14px;text-decoration:none;
+font-size:.8rem;font-weight:600;">
+<i class="bi bi-file-earmark-excel me-1"></i> Export Excel
+</a>
+</div>
+<div class="card-body p-0">
+<div class="table-responsive">
+<table class="table mb-0">
+<thead>
+<tr>
+<th>#</th>
+<th>Student</th>
+<th>Admission No.</th>
+<th>Total Days</th>
+<th>Present</th>
+<th>Absent</th>
+<th>Rate</th>
+</tr>
+</thead>
+<tbody>
+{% for r in report_data %}
+<tr>
+<td class="text-muted">{{ loop.index }}</td>
+<td style="font-weight:600;">
+{{ r['first_name'] }} {{ r['last_name'] }}
+</td>
+<td class="text-muted">{{ r['admission_no'] or '---' }}</td>
+<td>{{ r['total_days'] or 0 }}</td>
+<td>
+<span style="background:#ECFDF5;color:#059669;
+padding:3px 10px;border-radius:20px;
+font-size:.75rem;font-weight:700;">
+{{ r['present'] or 0 }}
+</span>
+</td>
+<td>
+<span style="background:#FEF2F2;color:#DC2626;
+padding:3px 10px;border-radius:20px;
+font-size:.75rem;font-weight:700;">
+{{ r['absent'] or 0 }}
+</span>
+</td>
+<td>
+{% if r['total_days'] and r['total_days'] > 0 %}
+{% set rate = ((r['present'] or 0) / r['total_days'] * 100)|int %}
+<div style="display:flex;align-items:center;gap:8px;">
+<div style="flex:1;background:#E2E8F0;border-radius:20px;
+height:6px;overflow:hidden;">
+<div style="width:{{ rate }}%;height:100%;
+background:{% if rate >= 75 %}#059669
+{% elif rate >= 50 %}#D97706
+{% else %}#DC2626{% endif %};
+border-radius:20px;"></div>
+</div>
+<span style="font-weight:700;font-size:.8rem;
+color:{% if rate >= 75 %}#059669
+{% elif rate >= 50 %}#D97706
+{% else %}#DC2626{% endif %};">
+{{ rate }}%
+</span>
+</div>
+{% else %}
+<span class="text-muted">N/A</span>
+{% endif %}
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</div>
+</div>
+{% elif selected_class and start_date and end_date %}
+<div class="card">
+<div class="card-body text-center py-5">
+<i class="bi bi-calendar-x d-block mb-2"
+style="font-size:2.5rem;opacity:.15;"></i>
+<span class="text-muted">
+No attendance records found for the selected period.
+</span>
+</div>
+</div>
+{% endif %}
+
+{% endblock %}
+

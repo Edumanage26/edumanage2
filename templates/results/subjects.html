@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block title %}Subjects{% endblock %}
+{% block page_title %}Manage Subjects{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+<div>
+<h5 style="font-size:1.1rem;font-weight:800;">
+Subjects — {{ cls['name'] }}
+</h5>
+<p class="text-muted mb-0" style="font-size:.82rem;">
+{{ subjects|length }} subject(s) added
+</p>
+</div>
+<a href="/results"
+style="background:#F1F5F9;color:#64748B;border-radius:8px;
+padding:8px 16px;text-decoration:none;font-size:.82rem;
+font-weight:600;display:flex;align-items:center;gap:6px;">
+<i class="bi bi-arrow-left"></i> Back to Results
+</a>
+</div>
+
+<!-- Add Subject -->
+<div class="card mb-4">
+<div class="card-header">
+<i class="bi bi-plus-circle"></i> Add Subject
+</div>
+<div class="card-body p-4">
+<form method="POST" class="row g-3 align-items-end">
+<input type="hidden" name="action" value="add"/>
+<div class="col-md-8">
+<label class="form-label fw-bold">
+Subject Name <span class="text-danger">*</span>
+</label>
+<input type="text" name="name" class="form-control"
+placeholder="e.g. Mathematics, English Language, Basic Science"
+required/>
+</div>
+<div class="col-md-4">
+<button type="submit" class="btn btn-primary w-100">
+<i class="bi bi-plus-circle me-1"></i> Add Subject
+</button>
+</div>
+</form>
+</div>
+</div>
+
+<!-- Subjects List -->
+<div class="card">
+<div class="card-body p-0">
+<div class="table-responsive">
+<table class="table mb-0">
+<thead>
+<tr>
+<th>#</th>
+<th>Subject Name</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+{% for sub in subjects %}
+<tr>
+<td class="text-muted">{{ loop.index }}</td>
+<td style="font-weight:600;">{{ sub['name'] }}</td>
+<td>
+<form method="POST" action="/results/subjects/{{ cls['id'] }}" class="row g-3 align-items-end">
+<input type="hidden" name="action" value="delete"/>
+<input type="hidden" name="subject_id" value="{{ sub['id'] }}"/>
+<button type="submit"
+style="background:#FEF2F2;color:#DC2626;
+border:1px solid #FECACA;border-radius:7px;
+padding:5px 12px;font-size:.8rem;font-weight:600;
+cursor:pointer;"
+onclick="return confirm('Delete {{ sub['name'] }}?')">
+<i class="bi bi-trash"></i> Delete
+</button>
+</form>
+</td>
+</tr>
+{% else %}
+<tr>
+<td colspan="3" class="text-center py-5">
+<i class="bi bi-book d-block mb-2"
+style="font-size:2.5rem;opacity:.15;"></i>
+<span class="text-muted">No subjects added yet.</span>
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</div>
+</div>
+{% endblock %}
+

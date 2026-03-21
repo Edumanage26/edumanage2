@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% block title %}Schools{% endblock %}
+{% block page_title %}Schools{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+<div>
+<h5 style="font-size:1.1rem;font-weight:800;">Schools</h5>
+<p class="text-muted mb-0" style="font-size:.82rem;">
+{{ schools|length }} school(s) registered
+</p>
+</div>
+<a href="/schools/add"
+style="background:#4F46E5;color:#fff;border-radius:8px;
+padding:8px 16px;text-decoration:none;font-size:.82rem;
+font-weight:600;display:flex;align-items:center;gap:6px;">
+<i class="bi bi-building-add"></i> Add School
+</a>
+</div>
+
+<div class="row g-3">
+{% for sc in schools %}
+<div class="col-md-6">
+<div class="card">
+<div class="card-body p-4">
+<div class="d-flex align-items-center gap-3 mb-3">
+{% if sc['logo_url'] %}
+<img src="{{ sc['logo_url'] }}"
+style="width:55px;height:55px;border-radius:10px;
+object-fit:contain;border:1px solid #E2E8F0;padding:4px;"/>
+{% elif sc['logo'] %}
+<img src="/static/uploads/logos/{{ sc['logo'] }}"
+style="width:55px;height:55px;border-radius:10px;
+object-fit:contain;border:1px solid #E2E8F0;padding:4px;"/>
+{% else %}
+<div style="width:55px;height:55px;border-radius:10px;
+background:#EEF2FF;display:flex;align-items:center;
+justify-content:center;font-size:1.5rem;">🏫</div>
+{% endif %}
+<div>
+<div style="font-weight:800;font-size:.95rem;">
+{{ sc['name'] }}
+</div>
+<div class="text-muted" style="font-size:.8rem;">
+{{ sc['address'] or 'No address' }}
+</div>
+</div>
+</div>
+
+<div class="d-flex gap-2 mb-3">
+<span style="background:#EEF2FF;color:#4F46E5;
+padding:4px 12px;border-radius:20px;
+font-size:.75rem;font-weight:600;">
+{{ sc['student_count'] }} Students
+</span>
+<span style="background:#F0F9FF;color:#0284C7;
+padding:4px 12px;border-radius:20px;
+font-size:.75rem;font-weight:600;">
+{{ sc['staff_count'] }} Staff
+</span>
+{% if sc['is_active'] %}
+<span style="background:#ECFDF5;color:#059669;
+padding:4px 12px;border-radius:20px;
+font-size:.75rem;font-weight:700;">Active</span>
+{% else %}
+<span style="background:#F1F5F9;color:#94A3B8;
+padding:4px 12px;border-radius:20px;
+font-size:.75rem;font-weight:700;">Inactive</span>
+{% endif %}
+</div>
+
+<div class="d-flex gap-2">
+<a href="/schools/view/{{ sc['id'] }}"
+style="background:#EEF2FF;color:#4F46E5;
+border-radius:7px;padding:6px 12px;
+text-decoration:none;font-size:.8rem;font-weight:600;">
+<i class="bi bi-eye"></i> View
+</a>
+<a href="/schools/edit/{{ sc['id'] }}"
+style="background:#FFFBEB;color:#D97706;
+border-radius:7px;padding:6px 12px;
+text-decoration:none;font-size:.8rem;font-weight:600;">
+<i class="bi bi-pencil"></i> Edit
+</a>
+<a href="/schools/toggle/{{ sc['id'] }}"
+style="background:{% if sc['is_active'] %}#FEF2F2;color:#DC2626{% else %}#ECFDF5;color:#059669{% endif %};
+border-radius:7px;padding:6px 12px;
+text-decoration:none;font-size:.8rem;font-weight:600;"
+onclick="return confirm('Are you sure?')">
+{% if sc['is_active'] %}
+<i class="bi bi-pause-circle"></i> Deactivate
+{% else %}
+<i class="bi bi-play-circle"></i> Activate
+{% endif %}
+</a>
+</div>
+</div>
+</div>
+</div>
+{% else %}
+<div class="col-12">
+<div class="card">
+<div class="card-body text-center py-5">
+<i class="bi bi-building d-block mb-2"
+style="font-size:2.5rem;opacity:.15;"></i>
+<span class="text-muted">No schools registered yet.</span><br>
+<a href="/schools/add" class="btn btn-primary btn-sm mt-3">
+<i class="bi bi-building-add me-1"></i>Add First School
+</a>
+</div>
+</div>
+</div>
+{% endfor %}
+</div>
+{% endblock %}
+

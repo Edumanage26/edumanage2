@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% block title %}Attendance{% endblock %}
+{% block page_title %}Attendance{% endblock %}
+{% block content %}
+
+<!-- Summary Cards -->
+<div class="row g-3 mb-4">
+<div class="col-md-3">
+<div class="kpi-card">
+<div class="kpi-icon" style="background:#EEF2FF;">
+<i class="bi bi-people" style="color:#4F46E5;"></i>
+</div>
+<div class="kpi-value" style="color:#4F46E5;">
+{{ summary['total'] or 0 }}
+</div>
+<div class="kpi-label">Total Marked</div>
+<div class="kpi-trend" style="color:#64748B;">Today</div>
+</div>
+</div>
+<div class="col-md-3">
+<div class="kpi-card">
+<div class="kpi-icon" style="background:#ECFDF5;">
+<i class="bi bi-check-circle" style="color:#059669;"></i>
+</div>
+<div class="kpi-value" style="color:#059669;">
+{{ summary['present'] or 0 }}
+</div>
+<div class="kpi-label">Present Today</div>
+<div class="kpi-trend" style="color:#059669;">
+<i class="bi bi-arrow-up"></i> Good
+</div>
+</div>
+</div>
+<div class="col-md-3">
+<div class="kpi-card">
+<div class="kpi-icon" style="background:#FEF2F2;">
+<i class="bi bi-x-circle" style="color:#DC2626;"></i>
+</div>
+<div class="kpi-value" style="color:#DC2626;">
+{{ summary['absent'] or 0 }}
+</div>
+<div class="kpi-label">Absent Today</div>
+<div class="kpi-trend" style="color:#DC2626;">
+{{ today }}
+</div>
+</div>
+</div>
+<div class="col-md-3">
+<div class="kpi-card">
+<div class="kpi-icon" style="background:#FFFBEB;">
+<i class="bi bi-calendar-check" style="color:#D97706;"></i>
+</div>
+<div class="kpi-value" style="color:#D97706;">
+{% if summary['total'] and summary['total'] > 0 %}
+{{ ((summary['present'] or 0) / summary['total'] * 100)|int }}%
+{% else %}0%{% endif %}
+</div>
+<div class="kpi-label">Attendance Rate</div>
+<div class="kpi-trend" style="color:#D97706;">Today</div>
+</div>
+</div>
+</div>
+
+<!-- Action Buttons -->
+<div class="d-flex gap-2 mb-4">
+<a href="/attendance/mark"
+style="background:#4F46E5;color:#fff;border-radius:8px;
+padding:8px 20px;text-decoration:none;font-size:.85rem;
+font-weight:600;display:flex;align-items:center;gap:8px;">
+<i class="bi bi-calendar-plus"></i> Mark Attendance
+</a>
+<a href="/attendance/report"
+style="background:#059669;color:#fff;border-radius:8px;
+padding:8px 20px;text-decoration:none;font-size:.85rem;
+font-weight:600;display:flex;align-items:center;gap:8px;">
+<i class="bi bi-file-earmark-bar-graph"></i> View Report
+</a>
+<a href="/export/attendance"
+style="background:#0284C7;color:#fff;border-radius:8px;
+padding:8px 20px;text-decoration:none;font-size:.85rem;
+font-weight:600;display:flex;align-items:center;gap:8px;">
+<i class="bi bi-file-earmark-excel"></i> Export Excel
+</a>
+</div>
+
+<!-- Recent Records -->
+<div class="card">
+<div class="card-header">
+<i class="bi bi-clock-history"></i> Recent Attendance Records
+</div>
+<div class="card-body p-0">
+<div class="table-responsive">
+<table class="table mb-0">
+<thead>
+<tr>
+<th>#</th>
+<th>Student</th>
+<th>Class</th>
+<th>Date</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+{% for rec in records %}
+<tr>
+<td class="text-muted">{{ loop.index }}</td>
+<td style="font-weight:600;">
+{{ rec['first_name'] }} {{ rec['last_name'] }}
+</td>
+<td>
+<span style="background:#EEF2FF;color:#4F46E5;
+padding:3px 10px;border-radius:20px;
+font-size:.75rem;font-weight:600;">
+{{ rec['class_name'] }}
+</span>
+</td>
+<td class="text-muted">{{ rec['date'] }}</td>
+<td>
+{% if rec['status'] == 'Present' %}
+<span style="background:#ECFDF5;color:#059669;
+padding:3px 10px;border-radius:20px;
+font-size:.75rem;font-weight:700;">Present</span>
+{% else %}
+<span style="background:#FEF2F2;color:#DC2626;
+padding:3px 10px;border-radius:20px;
+font-size:.75rem;font-weight:700;">Absent</span>
+{% endif %}
+</td>
+</tr>
+{% else %}
+<tr>
+<td colspan="5" class="text-center py-5">
+<i class="bi bi-calendar d-block mb-2"
+style="font-size:2.5rem;opacity:.15;"></i>
+<span class="text-muted">No attendance records yet.</span><br>
+<a href="/attendance/mark"
+class="btn btn-primary btn-sm mt-3">
+Mark Attendance Now
+</a>
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</div>
+</div>
+{% endblock %}
+

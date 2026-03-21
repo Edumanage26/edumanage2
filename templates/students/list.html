@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% block title %}Students{% endblock %}
+{% block page_title %}Students{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+<div>
+<h5 style="font-size:1.1rem;font-weight:800;">Students</h5>
+<p class="text-muted mb-0" style="font-size:.82rem;">
+{{ students|length }} student(s) found
+</p>
+</div>
+<div class="d-flex gap-2">
+<a href="/export/students"
+style="background:#059669;color:#fff;border-radius:8px;
+padding:8px 16px;text-decoration:none;font-size:.82rem;
+font-weight:600;display:flex;align-items:center;gap:6px;">
+<i class="bi bi-file-earmark-excel"></i> Export Excel
+</a>
+<a href="/students/add"
+style="background:#4F46E5;color:#fff;border-radius:8px;
+padding:8px 16px;text-decoration:none;font-size:.82rem;
+font-weight:600;display:flex;align-items:center;gap:6px;">
+<i class="bi bi-person-plus"></i> Add Student
+</a>
+</div>
+</div>
+
+<!-- Filter -->
+<div class="card mb-4">
+<div class="card-body py-3">
+<form method="GET" class="row g-2 align-items-center">
+<div class="col-md-5">
+<input type="text" name="search" class="form-control"
+placeholder="Search by name or admission number..."
+value="{{ search }}"/>
+</div>
+<div class="col-md-3">
+<select name="class_id" class="form-select">
+<option value="">All Classes</option>
+{% for cls in classes %}
+<option value="{{ cls['id'] }}"
+{{ 'selected' if selected_class == cls['id']|string }}>
+{{ cls['name'] }}
+</option>
+{% endfor %}
+</select>
+</div>
+<div class="col-md-2">
+<button type="submit" class="btn btn-primary w-100">
+Filter
+</button>
+</div>
+<div class="col-md-2">
+<a href="/students" class="btn btn-outline-secondary w-100">
+Clear
+</a>
+</div>
+</form>
+</div>
+</div>
+
+<!-- Table -->
+<div class="card">
+<div class="card-body p-0">
+<div class="table-responsive">
+<table class="table mb-0">
+<thead>
+<tr>
+<th>#</th>
+<th>Student</th>
+<th>Admission No.</th>
+<th>Class</th>
+<th>Gender</th>
+<th>Phone</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody>
+{% for s in students %}
+<tr>
+<td class="text-muted">{{ loop.index }}</td>
+<td>
+<div class="d-flex align-items-center gap-2">
+{% if s['photo_url'] %}
+<img src="{{ s['photo_url'] }}"
+style="width:34px;height:34px;border-radius:8px;
+object-fit:cover;"
+onerror="this.style.display='none'"/>
+{% elif s['photo'] %}
+<img src="/static/uploads/photos/{{ s['photo'] }}"
+style="width:34px;height:34px;border-radius:8px;
+object-fit:cover;"
+onerror="this.style.display='none'"/>
+{% else %}
+<div style="width:34px;height:34px;border-radius:8px;
+background:linear-gradient(135deg,#4F46E5,#818CF8);
+display:flex;align-items:center;justify-content:center;
+color:#fff;font-weight:700;font-size:.72rem;flex-shrink:0;">
+{{ s['first_name'][0] }}{{ s['last_name'][0] }}
+</div>
+{% endif %}
+<span style="font-weight:600;font-size:.85rem;">
+{{ s['first_name'] }} {{ s['last_name'] }}
+</span>
+</div>
+</td>
+<td class="text-muted">{{ s['admission_no'] or '---' }}</td>
+<td>
+<span style="background:#EEF2FF;color:#4F46E5;
+padding:3px 10px;border-radius:20px;
+font-size:.75rem;font-weight:600;">
+{{ s['class_name'] or 'Unassigned' }}
+</span>
+</td>
+<td class="text-muted">{{ s['gender'] or '---' }}</td>
+<td class="text-muted">{{ s['parent_phone'] or '---' }}</td>
+<td>
+<div class="d-flex gap-1">
+<a href="/students/view/{{ s['id'] }}"
+style="background:#EEF2FF;color:#4F46E5;
+border-radius:7px;padding:5px 10px;
+text-decoration:none;font-size:.78rem;font-weight:600;">
+<i class="bi bi-eye"></i>
+</a>
+<a href="/students/edit/{{ s['id'] }}"
+style="background:#FFFBEB;color:#D97706;
+border-radius:7px;padding:5px 10px;
+text-decoration:none;font-size:.78rem;font-weight:600;">
+<i class="bi bi-pencil"></i>
+</a>
+<a href="/students/delete/{{ s['id'] }}"
+style="background:#FEF2F2;color:#DC2626;
+border-radius:7px;padding:5px 10px;
+text-decoration:none;font-size:.78rem;font-weight:600;"
+onclick="return confirm('Remove this student?')">
+<i class="bi bi-trash"></i>
+</a>
+</div>
+</td>
+</tr>
+{% else %}
+<tr>
+<td colspan="7" class="text-center py-5">
+<i class="bi bi-people d-block mb-2"
+style="font-size:2.5rem;opacity:.15;"></i>
+<span class="text-muted">No students found.</span><br>
+<a href="/students/add"
+class="btn btn-primary btn-sm mt-3">
+<i class="bi bi-person-plus me-1"></i>Add First Student
+</a>
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</div>
+</div>
+{% endblock %}

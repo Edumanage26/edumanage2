@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>403 — Access Denied</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet"/>
+<style>
+* { box-sizing:border-box; margin:0; padding:0; }
+body {
+  font-family:'Plus Jakarta Sans',sans-serif;
+  background:#F1F5F9; color:#0F172A;
+  display:flex; align-items:center;
+  justify-content:center; min-height:100vh;
+}
+.error-box {
+  text-align:center; padding:48px 32px;
+  background:#fff; border-radius:16px;
+  border:1px solid #E2E8F0; max-width:480px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.06);
+}
+.error-code {
+  font-size:5rem; font-weight:800;
+  color:#DC2626; line-height:1;
+  margin-bottom:12px;
+}
+.error-msg {
+  font-size:1.1rem; font-weight:700;
+  margin-bottom:8px;
+}
+.error-sub {
+  color:#64748B; font-size:.9rem;
+  margin-bottom:24px;
+}
+.btn-home {
+  display:inline-block;
+  background:#4F46E5; color:#fff;
+  padding:10px 24px; border-radius:8px;
+  text-decoration:none; font-weight:700;
+  font-size:.9rem;
+}
+.btn-home:hover { background:#4338CA; color:#fff; }
+</style>
+</head>
+<body>
+<div class="error-box">
+  <div class="error-code">403</div>
+  <div class="error-msg">Access Denied</div>
+  <div class="error-sub">
+    You do not have permission to access this page.
+  </div>
+  <a href="/dashboard" class="btn-home">Go to Dashboard</a>
+</div>
+</body>
+</html>
+

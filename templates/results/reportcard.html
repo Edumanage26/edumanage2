@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Report Card</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#f0f2f5; font-family:'Plus Jakarta Sans',sans-serif; }
+
+.filter-bar {
+background:#0F172A; padding:10px 20px;
+display:flex; gap:10px; align-items:center;
+flex-wrap:wrap; position:sticky; top:0; z-index:99;
+}
+.filter-bar select {
+border-radius:6px; padding:5px 10px; font-size:.82rem;
+background:#1E293B; color:#fff; border:1px solid #334155;
+}
+.filter-bar label { color:#94A3B8; font-size:.78rem; font-weight:700; }
+.btn-load {
+background:#4F46E5; color:#fff; padding:7px 18px;
+border-radius:6px; border:none; cursor:pointer; font-weight:700;
+font-family:'Plus Jakarta Sans',sans-serif;
+}
+.btn-print {
+background:#059669; color:#fff; padding:7px 18px;
+border-radius:6px; border:none; cursor:pointer; font-weight:700;
+font-family:'Plus Jakarta Sans',sans-serif;
+}
+.btn-back {
+background:#334155; color:#fff; padding:7px 14px;
+border-radius:6px; text-decoration:none; font-size:.82rem;
+}
+.btn-export {
+background:#0284C7; color:#fff; padding:7px 14px;
+border-radius:6px; text-decoration:none; font-size:.82rem;
+font-weight:700;
+}
+
+.page-wrapper { padding:16px; }
+
+.report-card {
+background:#fff;
+width:210mm;
+height:297mm;
+overflow:hidden;
+margin:0 auto 24px;
+padding:8mm 10mm;
+box-shadow:0 4px 20px rgba(0,0,0,0.15);
+page-break-after:always;
+display:flex;
+flex-direction:column;
+gap:5px;
+}
+
+.school-header {
+display:flex; align-items:center; gap:12px;
+padding-bottom:8px;
+border-bottom:3px solid #4F46E5;
+flex-shrink:0;
+}
+.school-logo {
+width:75px; height:75px;
+object-fit:contain; border-radius:8px;
+}
+.logo-placeholder {
+width:75px; height:75px; background:#EEF2FF;
+border-radius:8px; display:flex; align-items:center;
+justify-content:center; font-size:2rem; flex-shrink:0;
+}
+.school-info { flex:1; text-align:center; }
+.school-info h4 {
+color:#4F46E5; font-weight:900; font-size:18px;
+margin:0 0 4px; text-transform:uppercase;
+letter-spacing:.02em;
+}
+.school-info p {
+margin:2px 0; font-size:11px;
+color:#334155; font-weight:600;
+}
+
+.report-title {
+background:linear-gradient(135deg,#4F46E5,#7C3AED);
+color:#fff; text-align:center; padding:6px;
+border-radius:6px; font-weight:800; font-size:11px;
+letter-spacing:.05em; flex-shrink:0;
+}
+
+.student-header {
+display:flex; align-items:center; gap:12px;
+background:#F8FAFC; border-radius:8px;
+padding:8px 10px;
+border-left:4px solid #4F46E5; flex-shrink:0;
+}
+.student-photo {
+width:65px; height:65px; border-radius:50%;
+object-fit:cover; border:2.5px solid #4F46E5; flex-shrink:0;
+}
+.student-photo-placeholder {
+width:65px; height:65px; border-radius:50%;
+background:linear-gradient(135deg,#4F46E5,#7C3AED);
+display:flex; align-items:center; justify-content:center;
+color:#fff; font-size:1.4rem; font-weight:800; flex-shrink:0;
+}
+.info-grid {
+display:grid; grid-template-columns:1fr 1fr;
+gap:3px 16px; flex:1;
+}
+.info-item { display:flex; align-items:center; gap:5px; }
+.info-label {
+font-size:9.5px; color:#94A3B8; font-weight:700;
+text-transform:uppercase; letter-spacing:.04em;
+min-width:85px;
+}
+.info-value { font-size:11px; font-weight:700; color:#0F172A; }
+
+.results-table {
+width:100%; border-collapse:collapse;
+font-size:10.5px; flex-shrink:0;
+}
+.results-table th {
+background:linear-gradient(135deg,#4F46E5,#7C3AED);
+color:#fff; padding:6px 5px;
+text-align:center; font-weight:700; font-size:10px;
+}
+.results-table th:first-child {
+text-align:left; padding-left:8px;
+}
+.results-table td {
+padding:5px; border:1px solid #E2E8F0;
+text-align:center; font-size:10.5px;
+}
+.results-table td:first-child {
+text-align:left; font-weight:600; padding-left:8px;
+}
+.results-table tr:nth-child(even) { background:#F8FAFC; }
+.grade-a { color:#059669; font-weight:800; }
+.grade-b { color:#4F46E5; font-weight:800; }
+.grade-c { color:#D97706; font-weight:800; }
+.grade-d { color:#EA580C; font-weight:800; }
+.grade-f { color:#DC2626; font-weight:800; }
+.pass { color:#059669; font-weight:700; }
+.fail { color:#DC2626; font-weight:700; }
+
+.grade-key {
+background:#FFFBEB; border:1px solid #FDE68A;
+border-radius:5px; padding:4px 10px;
+font-size:9px; color:#555; flex-shrink:0;
+}
+
+.summary-box {
+display:grid; grid-template-columns:repeat(4,1fr);
+gap:5px; flex-shrink:0;
+}
+.summary-item {
+background:#F8FAFC; border-radius:6px;
+padding:5px 4px; text-align:center;
+border:1px solid #E2E8F0;
+}
+.s-label {
+font-size:8px; color:#94A3B8;
+text-transform:uppercase; letter-spacing:.04em;
+margin-bottom:2px; font-weight:700;
+}
+.s-value { font-size:15px; font-weight:800; color:#4F46E5; }
+
+.attendance-box {
+background:#EEF2FF; border-radius:6px;
+padding:5px 10px; font-size:10px;
+border-left:4px solid #4F46E5; flex-shrink:0;
+}
+
+.comments-box {
+border:1px solid #E2E8F0; border-radius:6px;
+overflow:hidden; flex-shrink:0;
+}
+.comment-row {
+padding:6px 10px; border-bottom:1px solid #F1F5F9;
+}
+.comment-row:last-child { border-bottom:none; }
+.comment-label {
+font-size:10px; font-weight:800; color:#4F46E5;
+text-transform:uppercase; letter-spacing:.04em;
+margin-bottom:2px;
+}
+.comment-text {
+font-size:11px; color:#334155;
+font-style:italic; line-height:1.4;
+}
+
+.signature-section {
+display:grid; grid-template-columns:1fr 1fr;
+gap:24px; padding-top:5px;
+border-top:1px solid #E2E8F0; flex-shrink:0;
+}
+.sig-line {
+border-top:1.5px solid #334155; padding-top:4px;
+font-size:9px; color:#64748B;
+margin-top:18px; font-weight:600; text-align:center;
+}
+
+.next-term {
+text-align:center; font-size:9.5px; color:#64748B;
+padding:5px; background:#F8FAFC;
+border-radius:5px; flex-shrink:0; font-weight:600;
+}
+
+.pos-input {
+width:48px; border:2px solid #4F46E5;
+border-radius:5px; padding:2px 4px;
+font-size:10px; font-weight:700; color:#4F46E5;
+text-align:center;
+}
+.pos-display { font-weight:800; color:#4F46E5; display:none; }
+
+@media print {
+.filter-bar, .no-print, .pos-input { display:none !important; }
+.pos-display { display:inline !important; }
+.page-wrapper { padding:0; }
+body { background:#fff; }
+.report-card {
+box-shadow:none; margin:0;
+width:210mm; height:297mm;
+padding:7mm 9mm;
+}
+@page { margin:0; size:A4 portrait; }
+}
+</style>
+</head>
+<body>
+
+<div class="filter-bar no-print">
+<form method="GET"
+style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;">
+<div>
+<label>Term</label><br>
+<select name="term">
+{% for t in terms %}
+<option value="{{ t }}" {{ 'selected' if term == t }}>
+{{ t }}
+</option>
+{% endfor %}
+</select>
+</div>
+<div>
+<label>Session</label><br>
+<select name="session">
+{% for s in sessions %}
+<option value="{{ s }}" {{ 'selected' if session_yr == s }}>
+{{ s }}
+</option>
+{% endfor %}
+</select>
+</div>
+<div>
+<label>Student</label><br>
+<select name="student_id" style="min-width:180px;">
+<option value="">All Students</option>
+{% for s in students %}
+<option value="{{ s['id'] }}"
+{{ 'selected' if selected_student == s['id']|string }}>
+{{ s['first_name'] }} {{ s['last_name'] }}
+</option>
+{% endfor %}
+</select>
+</div>
+<div style="margin-top:16px;">
+<button type="submit" class="btn-load">Load</button>
+</div>
+</form>
+<div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+<a href="/export/reportcard?class_id={{ cls['id'] }}&term={{ term }}&session={{ session_yr }}"
+class="btn-export">
+<i style="margin-right:4px;">📊</i> Export Excel
+</a>
+<button onclick="window.print()" class="btn-print">
+🖨️ Print Report Cards
+</button>
+<a href="/results/enter/{{ cls['id'] }}?term={{ term }}&session={{ session_yr }}"
+class="btn-back">Back</a>
+</div>
+</div>
+
+<div class="page-wrapper">
+{% for data in report_data %}
+{% set s = data['student'] %}
+{% set pos = positions[s['id']] %}
+<div class="report-card">
+
+<div class="school-header">
+{% if cls['school_logo_url'] %}
+<img src="{{ cls['school_logo_url'] }}" class="school-logo"/>
+{% elif cls['school_logo'] %}
+<img src="/static/uploads/logos/{{ cls['school_logo'] }}"
+class="school-logo"/>
+{% else %}
+<div class="logo-placeholder">🏫</div>
+{% endif %}
+<div class="school-info">
+<h4>{{ cls['school_name'] }}</h4>
+{% if cls['school_address'] %}
+<p>{{ cls['school_address'] }}</p>
+{% endif %}
+<p>
+{% if cls['school_phone'] %}
+Tel: {{ cls['school_phone'] }}
+{% endif %}
+{% if cls['school_email'] %}
+&nbsp;|&nbsp; {{ cls['school_email'] }}
+{% endif %}
+</p>
+</div>
+<div style="width:75px;"></div>
+</div>
+
+<div class="report-title">
+STUDENT REPORT CARD &nbsp;&mdash;&nbsp;
+{{ term|upper }} &nbsp;&mdash;&nbsp; {{ session_yr }}
+</div>
+
+<div class="student-header">
+{% if s['photo_url'] %}
+<img src="{{ s['photo_url'] }}" class="student-photo"/>
+{% elif s['photo'] %}
+<img src="/static/uploads/photos/{{ s['photo'] }}"
+class="student-photo"/>
+{% else %}
+<div class="student-photo-placeholder">
+{{ s['first_name'][0] }}{{ s['last_name'][0] }}
+</div>
+{% endif %}
+<div class="info-grid">
+<div class="info-item">
+<span class="info-label">Full Name</span>
+<span class="info-value">
+{{ s['first_name'] }} {{ s['last_name'] }}
+</span>
+</div>
+<div class="info-item">
+<span class="info-label">Admission</span>
+<span class="info-value">
+{{ s['admission_no'] or '---' }}
+</span>
+</div>
+<div class="info-item">
+<span class="info-label">Class</span>
+<span class="info-value">{{ cls['name'] }}</span>
+</div>
+<div class="info-item">
+<span class="info-label">Gender</span>
+<span class="info-value">{{ s['gender'] or '---' }}</span>
+</div>
+<div class="info-item">
+<span class="info-label">No. in Class</span>
+<span class="info-value">{{ total_students }}</span>
+</div>
+<div class="info-item">
+<span class="info-label">Position</span>
+<span class="info-value">
+<input type="number" class="pos-input no-print"
+id="pos_input_{{ s['id'] }}"
+value="{{ pos }}" min="1" max="{{ total_students }}"
+oninput="updatePos({{ s['id'] }}, {{ total_students }})"/>
+<span class="pos-display"
+id="pos_display_{{ s['id'] }}">
+{{ pos }}{% if pos==1 %}st{% elif pos==2 %}nd{% elif pos==3 %}rd{% else %}th{% endif %}
+/{{ total_students }}
+</span>
+<small class="no-print"
+style="color:#94A3B8;font-size:9px;">
+/{{ total_students }}
+</small>
+</span>
+</div>
+</div>
+</div>
+
+<table class="results-table">
+<thead>
+<tr>
+<th style="width:32%;">Subject</th>
+<th>CA (/40)</th>
+<th>Exam (/60)</th>
+<th>Total (/100)</th>
+<th>Grade</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+{% for sub in data['subjects'] %}
+<tr>
+<td>{{ sub['subject'] }}</td>
+<td>{{ sub['ca1'] }}</td>
+<td>{{ sub['exam'] }}</td>
+<td><strong>{{ sub['total'] }}</strong></td>
+<td>
+<span class="
+{% if sub['grade']=='A' %}grade-a
+{% elif sub['grade']=='B' %}grade-b
+{% elif sub['grade']=='C' %}grade-c
+{% elif sub['grade']=='D' %}grade-d
+{% else %}grade-f{% endif %}">
+{{ sub['grade'] }}
+</span>
+</td>
+<td>
+<span class="{% if sub['status']=='Pass' %}pass{% else %}fail{% endif %}">
+{{ sub['status'] }}
+</span>
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+<div class="grade-key">
+<strong>Grade Key:</strong>
+A=80-100 (Excellent) &nbsp;|&nbsp;
+B=70-79 (Very Good) &nbsp;|&nbsp;
+C=60-69 (Good) &nbsp;|&nbsp;
+D=50-59 (Pass) &nbsp;|&nbsp;
+E=40-49 (Fair) &nbsp;|&nbsp;
+F=0-39 (Fail)
+</div>
+
+<div class="summary-box">
+<div class="summary-item">
+<div class="s-label">Total Score</div>
+<div class="s-value">{{ data['total_score'] }}</div>
+</div>
+<div class="summary-item">
+<div class="s-label">Average</div>
+<div class="s-value">{{ data['average'] }}</div>
+</div>
+<div class="summary-item">
+<div class="s-label">Percentage</div>
+<div class="s-value">{{ data['percentage'] }}%</div>
+</div>
+<div class="summary-item">
+<div class="s-label">Position</div>
+<div class="s-value" id="pos_summary_{{ s['id'] }}">
+{{ pos }}{% if pos==1 %}st{% elif pos==2 %}nd{% elif pos==3 %}rd{% else %}th{% endif %}
+</div>
+</div>
+</div>
+
+<div class="attendance-box">
+<strong>Termly Attendance:</strong> &nbsp;
+Total Days: <strong>{{ data['att_total'] }}</strong>
+&nbsp;|&nbsp;
+Present: <strong style="color:#059669;">
+{{ data['att_present'] }}
+</strong>
+&nbsp;|&nbsp;
+Absent: <strong style="color:#DC2626;">
+{{ data['att_absent'] }}
+</strong>
+&nbsp;|&nbsp;
+Rate: <strong>
+{% if data['att_total'] > 0 %}
+{{ ((data['att_present']/data['att_total'])*100)|int }}%
+{% else %}N/A{% endif %}
+</strong>
+</div>
+
+<div class="comments-box">
+<div class="comment-row">
+<div class="comment-label">Class Teacher's Comment</div>
+<div class="comment-text">{{ data['auto_comment'] }}</div>
+</div>
+<div class="comment-row">
+<div class="comment-label">Principal's Comment</div>
+<div class="comment-text">{{ data['principal_comment'] }}</div>
+</div>
+</div>
+
+<div class="signature-section">
+<div><div class="sig-line">
+Class Teacher's Signature &amp; Date
+</div></div>
+<div><div class="sig-line">
+Principal's Signature &amp; Date
+</div></div>
+</div>
+
+<div class="next-term">
+<strong>Next Term Begins:</strong>
+_______________________
+&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>School Fees for Next Term:</strong>
+_______________________
+</div>
+
+</div>
+{% endfor %}
+</div>
+
+<script>
+function updatePos(studentId, total) {
+  var input   = document.getElementById("pos_input_" + studentId);
+  var val     = parseInt(input.value) || 1;
+  if (val < 1) val = 1;
+  if (val > total) val = total;
+  input.value = val;
+  var suffix  = val==1?"st":val==2?"nd":val==3?"rd":"th";
+  var display = document.getElementById("pos_display_" + studentId);
+  var summary = document.getElementById("pos_summary_" + studentId);
+  if (display) display.innerHTML = val + suffix + "/" + total;
+  if (summary) summary.innerHTML = val + suffix;
+}
+window.addEventListener("beforeprint", function() {
+  document.querySelectorAll("[id^=pos_display_]").forEach(function(el) {
+    el.style.display = "inline";
+  });
+  document.querySelectorAll(".no-print").forEach(function(el) {
+    el.style.display = "none";
+  });
+});
+window.addEventListener("afterprint", function() {
+  document.querySelectorAll("[id^=pos_display_]").forEach(function(el) {
+    el.style.display = "none";
+  });
+  document.querySelectorAll(".no-print").forEach(function(el) {
+    el.style.display = "";
+  });
+});
+</script>
+</body>
+</html>
+
