@@ -26,13 +26,8 @@ body {
   padding:48px 40px; display:flex; flex-direction:column;
   justify-content:center; color:#fff;
 }
-.login-left h1 {
-  font-size:2rem; font-weight:800; margin-bottom:12px;
-}
-.login-left p {
-  font-size:.95rem; opacity:.85; line-height:1.6;
-  margin-bottom:32px;
-}
+.login-left h1 { font-size:2rem; font-weight:800; margin-bottom:12px; }
+.login-left p { font-size:.95rem; opacity:.85; line-height:1.6; margin-bottom:32px; }
 .feature-item {
   display:flex; align-items:center; gap:12px;
   margin-bottom:16px; font-size:.88rem;
@@ -54,17 +49,9 @@ body {
   display:flex; align-items:center; justify-content:center;
   font-size:1.5rem; margin-bottom:20px;
 }
-.login-right h2 {
-  font-size:1.5rem; font-weight:800;
-  color:#0F172A; margin-bottom:6px;
-}
-.login-right p {
-  color:#64748B; font-size:.88rem; margin-bottom:28px;
-}
-.form-label {
-  font-size:.8rem; font-weight:700;
-  color:#374151; margin-bottom:6px;
-}
+.login-right h2 { font-size:1.5rem; font-weight:800; color:#0F172A; margin-bottom:6px; }
+.login-right p { color:#64748B; font-size:.88rem; margin-bottom:28px; }
+.form-label { font-size:.8rem; font-weight:700; color:#374151; margin-bottom:6px; }
 .form-control {
   border-radius:8px; border:1.5px solid #E2E8F0;
   padding:10px 14px; font-size:.88rem;
@@ -91,6 +78,14 @@ body {
   color:#64748B;
 }
 .default-creds strong { color:#4F46E5; }
+.toggle-pw {
+  border:1.5px solid #E2E8F0;
+  border-left:none; border-radius:0 8px 8px 0;
+  background:#F8FAFC; cursor:pointer;
+  padding:0 14px; color:#64748B;
+}
+.toggle-pw:hover { background:#EEF2FF; color:#4F46E5; }
+.input-group .form-control { border-radius:8px 0 0 8px; }
 @media (max-width:768px) {
   .login-left { display:none; }
   .login-right { width:100%; }
@@ -105,7 +100,7 @@ body {
     <p>The complete multi-school management platform for Nigerian schools.</p>
     <div class="feature-item">
       <div class="feature-icon">👥</div>
-      <div>Student Management & Records</div>
+      <div>Student Management and Records</div>
     </div>
     <div class="feature-item">
       <div class="feature-icon">📅</div>
@@ -113,7 +108,7 @@ body {
     </div>
     <div class="feature-item">
       <div class="feature-icon">📝</div>
-      <div>Results & Report Cards</div>
+      <div>Results and Report Cards</div>
     </div>
     <div class="feature-item">
       <div class="feature-icon">💰</div>
@@ -121,7 +116,7 @@ body {
     </div>
     <div class="feature-item">
       <div class="feature-icon">📊</div>
-      <div>Excel Export & Analytics</div>
+      <div>Excel Export and Analytics</div>
     </div>
   </div>
 
@@ -135,7 +130,8 @@ body {
       {% for category, message in messages %}
       <div class="alert alert-{{ 'success' if category == 'success'
         else 'danger' if category == 'danger'
-        else 'warning' }} mb-3" style="font-size:.85rem;border-radius:8px;">
+        else 'warning' }} mb-3"
+        style="font-size:.85rem;border-radius:8px;">
         {{ message }}
       </div>
       {% endfor %}
@@ -150,8 +146,15 @@ body {
       </div>
       <div class="mb-4">
         <label class="form-label">Password</label>
-        <input type="password" name="password" class="form-control"
-               placeholder="Enter your password" required/>
+        <div class="input-group">
+          <input type="password" name="password"
+                 class="form-control" id="password"
+                 placeholder="Enter your password" required/>
+          <button type="button" class="toggle-pw"
+                  onclick="togglePassword()">
+            <i class="bi bi-eye" id="eye_icon"></i>
+          </button>
+        </div>
       </div>
       <button type="submit" class="btn-login">
         Sign In to EduManage Pro
@@ -164,5 +167,19 @@ body {
     </div>
   </div>
 </div>
+
+<script>
+function togglePassword() {
+  var input = document.getElementById("password");
+  var icon  = document.getElementById("eye_icon");
+  if (input.type === "password") {
+    input.type = "text";
+    icon.className = "bi bi-eye-slash";
+  } else {
+    input.type = "password";
+    icon.className = "bi bi-eye";
+  }
+}
+</script>
 </body>
 </html>
