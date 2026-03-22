@@ -9,7 +9,7 @@
 <i class="bi bi-person-plus"></i> Add Staff to {{ school['name'] }}
 </div>
 <div class="card-body p-4">
-<form method="POST">
+<form method="POST" action="/schools/{{ school['id'] }}/add-staff">
 
 <div class="mb-3">
 <label class="form-label fw-bold">
@@ -58,4 +58,19 @@ class="btn btn-outline-secondary">Cancel</a>
 </div>
 </div>
 {% endblock %}
+```
 
+---
+
+## Restart App
+
+```powershell
+python app.py
+```
+
+Then push to GitHub:
+
+```powershell
+git add .
+git commit -m "Fixed add staff template"
+git push origin main

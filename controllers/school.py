@@ -20,7 +20,8 @@ def list_schools():
             COUNT(DISTINCT u.id) AS staff_count
         FROM schools sc
         LEFT JOIN students s ON s.school_id = sc.id AND s.is_active = 1
-        LEFT JOIN users u ON u.school_id = sc.id AND u.is_active = 1
+        LEFT JOIN users u ON u.school_id = sc.id
+            AND u.is_active = 1 AND u.role != 'super_admin'
         GROUP BY sc.id
         ORDER BY sc.created_at DESC
     """)
@@ -89,7 +90,12 @@ def edit_school(school_id):
         email   = request.form.get("email", "").strip()
 
         logo     = school["logo"]
-        logo_url = school["logo_url"] if "logo_url" in school.keys() else None
+        logo_url = None
+        try:
+            logo_url = school["logo_url"]
+        except Exception:
+            pass
+
         file = request.files.get("logo")
         if file and file.filename:
             try:
@@ -208,7 +214,8 @@ def add_staff(school_id):
         """, (school_id, name, email, hashed, role))
         conn.commit()
         close_db(conn)
-        flash(f"Staff {name} added! Default password: Admin@1234", "success")
+        flash(f"Staff {name} added! Default password: Admin@1234",
+              "success")
         return redirect(url_for("school.view_school",
                                 school_id=school_id))
 
@@ -235,9 +242,10 @@ def delete_staff(user_id):
 
     school_id = user["school_id"]
 
-    cur.execute(
-        "SELECT COUNT(*) AS cnt FROM users WHERE school_id = ? AND role = 'school_admin'",
-        (school_id,))
+    cur.execute("""
+        SELECT COUNT(*) AS cnt FROM users
+        WHERE school_id = ? AND role = 'school_admin'
+    """, (school_id,))
     admin_count = cur.fetchone()["cnt"]
 
     if user["role"] == "school_admin" and admin_count <= 1:
@@ -252,4 +260,3 @@ def delete_staff(user_id):
     flash(f"Staff {user['name']} removed successfully!", "success")
     return redirect(url_for("school.view_school",
                             school_id=school_id))
-
