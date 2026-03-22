@@ -69,15 +69,9 @@ body {
   font-weight:700; font-size:.95rem;
   cursor:pointer; transition:background .2s;
   font-family:'Plus Jakarta Sans',sans-serif;
+  margin-top:8px;
 }
 .btn-login:hover { background:#4338CA; }
-.default-creds {
-  margin-top:20px; padding:12px 16px;
-  background:#F8FAFC; border-radius:8px;
-  border:1px solid #E2E8F0; font-size:.78rem;
-  color:#64748B;
-}
-.default-creds strong { color:#4F46E5; }
 .toggle-pw {
   border:1.5px solid #E2E8F0;
   border-left:none; border-radius:0 8px 8px 0;
@@ -86,6 +80,10 @@ body {
 }
 .toggle-pw:hover { background:#EEF2FF; color:#4F46E5; }
 .input-group .form-control { border-radius:8px 0 0 8px; }
+.copyright {
+  margin-top:24px; text-align:center;
+  font-size:.75rem; color:#94A3B8;
+}
 @media (max-width:768px) {
   .login-left { display:none; }
   .login-right { width:100%; }
@@ -118,6 +116,10 @@ body {
       <div class="feature-icon">📊</div>
       <div>Excel Export and Analytics</div>
     </div>
+    <div class="feature-item">
+      <div class="feature-icon">📱</div>
+      <div>Mobile Friendly Interface</div>
+    </div>
   </div>
 
   <div class="login-right">
@@ -144,7 +146,7 @@ body {
         <input type="email" name="email" class="form-control"
                placeholder="Enter your email" required/>
       </div>
-      <div class="mb-4">
+      <div class="mb-3">
         <label class="form-label">Password</label>
         <div class="input-group">
           <input type="password" name="password"
@@ -161,9 +163,9 @@ body {
       </button>
     </form>
 
-    <div class="default-creds">
-      <strong>Super Admin:</strong> admin@schoolplatform.com<br/>
-      <strong>Password:</strong> Admin@1234
+    <div class="copyright">
+      &copy; 2026 EduManage Pro. All rights reserved.<br/>
+      Developed by Ogunwale Olujide
     </div>
   </div>
 </div>
@@ -183,3 +185,5 @@ function togglePassword() {
 </script>
 </body>
 </html>
+
+
