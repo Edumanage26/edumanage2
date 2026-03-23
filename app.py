@@ -41,6 +41,10 @@ def create_app():
     def index():
         return redirect(url_for("auth.login"))
 
+    @app.route("/pricing")
+    def pricing():
+        return render_template("pricing.html")
+
     @app.errorhandler(404)
     def not_found(e):
         return render_template("404.html"), 404
@@ -90,3 +94,4 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     print(f"EduManage Pro starting on http://0.0.0.0:{port}")
     application.run(debug=True, port=port, host="0.0.0.0")
+

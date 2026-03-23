@@ -80,8 +80,15 @@ body {
 }
 .toggle-pw:hover { background:#EEF2FF; color:#4F46E5; }
 .input-group .form-control { border-radius:8px 0 0 8px; }
+.pricing-link {
+  display:block; text-align:center;
+  margin-top:16px; color:#4F46E5;
+  font-size:.82rem; font-weight:600;
+  text-decoration:none;
+}
+.pricing-link:hover { color:#4338CA; }
 .copyright {
-  margin-top:24px; text-align:center;
+  margin-top:16px; text-align:center;
   font-size:.75rem; color:#94A3B8;
 }
 @media (max-width:768px) {
@@ -163,9 +170,13 @@ body {
       </button>
     </form>
 
+    <a href="/pricing" class="pricing-link">
+      <i class="bi bi-tag me-1"></i> View Pricing Plans
+    </a>
+
     <div class="copyright">
       &copy; 2026 EduManage Pro. All rights reserved.<br/>
-      Developed by Ogunwale Olujide
+      Developed by Ogunwale Olujide — Kebbi State
     </div>
   </div>
 </div>
@@ -185,5 +196,3 @@ function togglePassword() {
 </script>
 </body>
 </html>
-
-

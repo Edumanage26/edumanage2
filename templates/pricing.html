@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Pricing — EduManage Pro</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+* { box-sizing:border-box; margin:0; padding:0; }
+body {
+  font-family:'Plus Jakarta Sans',sans-serif;
+  background:#F1F5F9; color:#0F172A;
+}
+.navbar {
+  background:#0F172A; padding:16px 32px;
+  display:flex; align-items:center;
+  justify-content:space-between;
+}
+.nav-brand {
+  display:flex; align-items:center; gap:10px;
+  text-decoration:none;
+}
+.nav-logo {
+  width:38px; height:38px; border-radius:10px;
+  background:#4F46E5;
+  display:flex; align-items:center;
+  justify-content:center; font-size:1.1rem;
+}
+.nav-title {
+  font-weight:800; font-size:1rem; color:#fff;
+}
+.nav-login {
+  background:#4F46E5; color:#fff;
+  padding:8px 20px; border-radius:8px;
+  text-decoration:none; font-weight:700;
+  font-size:.85rem;
+}
+.nav-login:hover { background:#4338CA; color:#fff; }
+
+.hero {
+  background:linear-gradient(135deg,#0F172A,#1E293B);
+  padding:60px 20px; text-align:center; color:#fff;
+}
+.hero h1 {
+  font-size:2.5rem; font-weight:800;
+  margin-bottom:12px;
+}
+.hero h1 span { color:#818CF8; }
+.hero p {
+  font-size:1rem; color:#94A3B8;
+  max-width:500px; margin:0 auto 24px;
+}
+.toggle-wrapper {
+  display:flex; align-items:center;
+  justify-content:center; gap:12px;
+  margin-top:16px;
+}
+.toggle-label {
+  font-size:.9rem; font-weight:600; color:#94A3B8;
+}
+.toggle-label.active { color:#fff; }
+.toggle-switch {
+  width:52px; height:28px; background:#334155;
+  border-radius:20px; cursor:pointer;
+  position:relative; transition:background .2s;
+  border:none;
+}
+.toggle-switch.annual { background:#4F46E5; }
+.toggle-switch::after {
+  content:''; position:absolute;
+  width:22px; height:22px;
+  background:#fff; border-radius:50%;
+  top:3px; left:3px; transition:left .2s;
+}
+.toggle-switch.annual::after { left:27px; }
+.save-badge {
+  background:#059669; color:#fff;
+  padding:3px 10px; border-radius:20px;
+  font-size:.72rem; font-weight:700;
+}
+
+.pricing-section { padding:60px 20px; }
+.pricing-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));
+  gap:24px; max-width:1100px; margin:0 auto;
+}
+
+.pricing-card {
+  background:#fff; border-radius:16px;
+  border:2px solid #E2E8F0;
+  padding:32px 28px;
+  transition:transform .2s, box-shadow .2s;
+  position:relative;
+}
+.pricing-card:hover {
+  transform:translateY(-4px);
+  box-shadow:0 12px 40px rgba(0,0,0,0.1);
+}
+.pricing-card.popular {
+  border-color:#4F46E5;
+  box-shadow:0 8px 30px rgba(79,70,229,0.15);
+}
+.popular-badge {
+  position:absolute; top:-14px; left:50%;
+  transform:translateX(-50%);
+  background:#4F46E5; color:#fff;
+  padding:4px 16px; border-radius:20px;
+  font-size:.75rem; font-weight:700;
+  white-space:nowrap;
+}
+.plan-icon {
+  width:48px; height:48px; border-radius:12px;
+  display:flex; align-items:center;
+  justify-content:center; font-size:1.4rem;
+  margin-bottom:16px;
+}
+.plan-name {
+  font-size:1.1rem; font-weight:800;
+  margin-bottom:4px;
+}
+.plan-desc {
+  font-size:.82rem; color:#64748B;
+  margin-bottom:20px;
+}
+.plan-price {
+  margin-bottom:4px;
+}
+.currency {
+  font-size:1rem; font-weight:700;
+  vertical-align:top; margin-top:6px;
+  display:inline-block;
+}
+.amount {
+  font-size:2.8rem; font-weight:800;
+  line-height:1;
+}
+.period {
+  font-size:.82rem; color:#64748B;
+  margin-bottom:20px;
+}
+.annual-price {
+  font-size:.8rem; color:#059669;
+  font-weight:600; margin-bottom:20px;
+}
+.divider {
+  border:none; border-top:1px solid #E2E8F0;
+  margin:20px 0;
+}
+.feature-list {
+  list-style:none; margin-bottom:28px;
+}
+.feature-list li {
+  display:flex; align-items:center; gap:10px;
+  font-size:.85rem; margin-bottom:10px;
+  color:#334155;
+}
+.feature-list li i {
+  font-size:.9rem; flex-shrink:0;
+}
+.feature-list li.included i { color:#059669; }
+.feature-list li.excluded {
+  color:#94A3B8; text-decoration:line-through;
+}
+.feature-list li.excluded i { color:#CBD5E1; }
+.btn-plan {
+  width:100%; padding:12px;
+  border-radius:10px; border:none;
+  font-weight:700; font-size:.9rem;
+  cursor:pointer; text-decoration:none;
+  display:block; text-align:center;
+  transition:all .2s;
+  font-family:'Plus Jakarta Sans',sans-serif;
+}
+.btn-free {
+  background:#F1F5F9; color:#64748B;
+  border:2px solid #E2E8F0;
+}
+.btn-free:hover { background:#E2E8F0; color:#334155; }
+.btn-basic {
+  background:#EEF2FF; color:#4F46E5;
+  border:2px solid #C7D2FE;
+}
+.btn-basic:hover { background:#4F46E5; color:#fff; }
+.btn-popular {
+  background:#4F46E5; color:#fff;
+}
+.btn-popular:hover { background:#4338CA; }
+.btn-enterprise {
+  background:#0F172A; color:#fff;
+}
+.btn-enterprise:hover { background:#1E293B; }
+
+.addons-section {
+  background:#fff; padding:60px 20px;
+  border-top:1px solid #E2E8F0;
+}
+.addons-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+  gap:16px; max-width:900px; margin:24px auto 0;
+}
+.addon-card {
+  background:#F8FAFC; border-radius:12px;
+  padding:20px; border:1px solid #E2E8F0;
+  text-align:center;
+}
+.addon-icon { font-size:1.8rem; margin-bottom:8px; }
+.addon-name {
+  font-weight:700; font-size:.9rem;
+  margin-bottom:4px;
+}
+.addon-price {
+  font-size:1.1rem; font-weight:800;
+  color:#4F46E5;
+}
+.addon-desc { font-size:.75rem; color:#64748B; margin-top:4px; }
+
+.faq-section { padding:60px 20px; max-width:700px; margin:0 auto; }
+.faq-section h2 {
+  text-align:center; font-size:1.8rem;
+  font-weight:800; margin-bottom:32px;
+}
+.faq-item {
+  background:#fff; border-radius:10px;
+  border:1px solid #E2E8F0;
+  margin-bottom:12px; overflow:hidden;
+}
+.faq-question {
+  padding:16px 20px; font-weight:700;
+  font-size:.9rem; cursor:pointer;
+  display:flex; justify-content:space-between;
+  align-items:center;
+}
+.faq-answer {
+  padding:0 20px 16px;
+  font-size:.85rem; color:#64748B;
+  line-height:1.6; display:none;
+}
+.faq-answer.show { display:block; }
+
+.cta-section {
+  background:linear-gradient(135deg,#4F46E5,#7C3AED);
+  padding:60px 20px; text-align:center; color:#fff;
+}
+.cta-section h2 {
+  font-size:2rem; font-weight:800; margin-bottom:12px;
+}
+.cta-section p {
+  font-size:1rem; opacity:.85; margin-bottom:28px;
+}
+.btn-cta {
+  background:#fff; color:#4F46E5;
+  padding:14px 32px; border-radius:10px;
+  text-decoration:none; font-weight:800;
+  font-size:1rem; display:inline-block;
+  transition:transform .2s;
+}
+.btn-cta:hover { transform:scale(1.05); color:#4F46E5; }
+
+.footer {
+  background:#0F172A; padding:24px 32px;
+  text-align:center; color:#64748B;
+  font-size:.82rem;
+}
+
+@media (max-width:768px) {
+  .hero h1 { font-size:1.8rem; }
+  .pricing-grid { grid-template-columns:1fr; max-width:400px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <a href="/" class="nav-brand">
+    <div class="nav-logo">🎓</div>
+    <span class="nav-title">EduManage Pro</span>
+  </a>
+  <a href="/login" class="nav-login">Login</a>
+</nav>
+
+<!-- Hero -->
+<div class="hero">
+  <h1>Simple <span>Affordable</span> Pricing</h1>
+  <p>Choose the plan that works best for your school. No hidden charges.</p>
+  <div class="toggle-wrapper">
+    <span class="toggle-label active" id="monthly_label">Monthly</span>
+    <button class="toggle-switch" id="billing_toggle"
+            onclick="toggleBilling()"></button>
+    <span class="toggle-label" id="annual_label">Annual</span>
+    <span class="save-badge">Save 20%</span>
+  </div>
+</div>
+
+<!-- Pricing Cards -->
+<div class="pricing-section">
+  <div class="pricing-grid">
+
+    <!-- Free -->
+    <div class="pricing-card">
+      <div class="plan-icon" style="background:#F1F5F9;">🎁</div>
+      <div class="plan-name">Free</div>
+      <div class="plan-desc">Perfect for very small schools</div>
+      <div class="plan-price">
+        <span class="currency">N</span>
+        <span class="amount">0</span>
+      </div>
+      <div class="period">forever free</div>
+      <hr class="divider"/>
+      <ul class="feature-list">
+        <li class="included">
+          <i class="bi bi-check-circle-fill"></i> Up to 30 students
+        </li>
+        <li class="included">
+          <i class="bi bi-check-circle-fill"></i> 1 school
+        </li>
+        <li class="included">
+          <i class="bi bi-check-circle-fill"></i> Attendance tracking
+        </li>
+        <li class="included">
+          <i class="bi bi-check-circle-fill"></i> Basic results
+        </li>
+        <li class="excluded">
+          <i class="bi bi-x-circle-fill"></i> Report cards
+        </li>
+        <li class="excluded">
+          <i class="bi bi-x-circle-fill"></i> Excel export
+        </li>
+        <li class="excluded">
+          <i class="bi bi-x-circle-fill"></i> Fee management
+        </li>
+      </ul>
+      <a href="/login" class="btn-plan btn-free">Get Started Free</a>
+    </div>
+
+    <!-- Basic -->
+    <div class="pricing-card">
+      <div class="plan-icon" style="background:#EEF2FF;">📚</div>
+      <div class="plan-name">Basic</div>
+      <div class="plan-desc">Great for small primary schools</div>
+      <div class="plan-price">
+        <span class="currency">N</span>
+        <span class="amount monthly-price">2,500</span>
+        <span class="amount annual-price" style="display:none;">2,000</span>
+      </div>
+      <div class="period">per month</div>
+      <div class="annual-price" style="display:none;">
+        N24,000/year — Save N6,000
+      </div>
+      <hr class="divider"/>
+      <ul class="feature-list">
+        <li class="included">
+          <i class="bi bi-check-circle-fill"></i> Up to 100 students
+        </li>
+        <li class="included">
+          <i class="bi bi-check-circle-fill"></i> 1 school
+        </li>
+        <li class="included">
+          <i class="bi bi-check-circle-fill"></i> Attendance tracking
+        </li>
+        <li class="included">
+          <i class="bi bi-check-circle-fill"></i> Results and grades
+        </li>
+        <li class="included">
+          <i class="bi bi-check-circle-fill"></i> Report cards
+        </li>
+        <li class="included">
+          <i class="bi bi-check-circle-fill"></i> Excel export
+        </li>
+        <li class="excluded">
+          <i class="bi bi-x-circle-fill"></i> Fee management
+        </li>
+      </ul>
+      <a href="/login" class="btn-plan btn-basic">Get Basic Plan</a>
+    </div>
+
+    <!-- Standard (Popular) -->
+    <div class="pricing-card popular">
+      <div class="popular-badge">⭐ Most Popular</div>
+      <div class="plan-icon" style="background:#EEF2FF;">🏫</div>
+      <div class="plan-name">Standard</div>
+      <div class="plan-desc">Best for growing schools</div>
+      <div class="plan-price">
+        <span class="currency">N</span>
+        <span class="amount monthly-price">5,000</span>
+        <span class="amount annual-price" style="display:none;">4,200</span>
+      </div>
+      <div class="period">per month</div>
+      <div class="annual-price" style="display:none;">
+        N50,000/year — Save N10,000
+      </div>
+      <hr class="divider"/>
+      <ul class="feature-list">
+        <li class="included">
+          <i class="bi bi-check-circle-fill"></i> Up to 300 students
+        </li>
+        <li class="included">
+          <i class="bi bi-check-circle-fill"></i> 1 school
+        </li>
+        <li class="included">
+          <i class="bi bi-check-circle-fill"></i> Attendance tracking
+        </li>
+        <li class="included">
+          <i class="bi bi-check-circle-fill"></i> Results and report cards
+        </li>
+        <li class="included">
+          <i class="bi bi-check-circle-fill"></i> Excel export
+        </li>
+        <li class="included">
+          <i class="bi bi-check-circle-fill"></i> Fee management
+        </li>
+        <li class="included">
+          <i class="bi bi-check-circle-fill"></i> Accounting module
+        </li>
+      </ul>
+      <a href="/login" class="btn-plan btn-popular">Get Standard Plan</a>
+    </div>
+
+    <!-- Premium -->
+    <div class="pricing-card">
+      <div class="plan-icon" style="background:#FFFBEB;">👑</div>
+      <div class="plan-name">Premium</div>
+      <div class="plan-desc">For large schools</div>
+      <div class="plan-price">
+        <span class="currency">N</span>
+        <span class="amount monthly-price">8,000</span>
+        <span class="amount annual-price" style="display:none;">6,700</span>
+      </div>
+      <div class="period">per month</div>
+      <div class="annual-price" style="display:none;">
+        N80,000/year — Save N16,000
+      </div>
+      <hr class="divider"/>
+      <ul class="feature-list">
+        <li class="included">
+          <i class="bi bi-check-circle-fill"></i> Up to 500 students
+        </li>
+        <li class="included">
+          <i class="bi bi-check-circle-fill"></i> 1 school
+        </li>
+        <li class="included">
+          <i class="bi bi-check-circle-fill"></i> All Standard features
+        </li>
+        <li class="included">
+          <i class="bi bi-check-circle-fill"></i> Priority support
+        </li>
+        <li class="included">
+          <i class="bi bi-check-circle-fill"></i> Custom school branding
+        </li>
+        <li class="included">
+          <i class="bi bi-check-circle-fill"></i> Staff management
+        </li>
+        <li class="included">
+          <i class="bi bi-check-circle-fill"></i> Multiple classes
+        </li>
+      </ul>
+      <a href="/login" class="btn-plan btn-basic">Get Premium Plan</a>
+    </div>
+
+    <!-- Enterprise -->
+    <div class="pricing-card">
+      <div class="plan-icon" style="background:#F0FFF4;">🏢</div>
+      <div class="plan-name">Enterprise</div>
+      <div class="plan-desc">For school networks</div>
+      <div class="plan-price">
+        <span class="currency">N</span>
+        <span class="amount monthly-price">15,000</span>
+        <span class="amount annual-price" style="display:none;">12,500</span>
+      </div>
+      <div class="period">per month</div>
+      <div class="annual-price" style="display:none;">
+        N150,000/year — Save N30,000
+      </div>
+      <hr class="divider"/>
+      <ul class="feature-list">
+        <li class="included">
+          <i class="bi bi-check-circle-fill"></i> Unlimited students
+        </li>
+        <li class="included">
+          <i class="bi bi-check-circle-fill"></i> Multiple schools
+        </li>
+        <li class="included">
+          <i class="bi bi-check-circle-fill"></i> All Premium features
+        </li>
+        <li class="included">
+          <i class="bi bi-check-circle-fill"></i> Dedicated support
+        </li>
+        <li class="included">
+          <i class="bi bi-check-circle-fill"></i> Custom domain
+        </li>
+        <li class="included">
+          <i class="bi bi-check-circle-fill"></i> Data backup
+        </li>
+        <li class="included">
+          <i class="bi bi-check-circle-fill"></i> Training included
+        </li>
+      </ul>
+      <a href="/login" class="btn-plan btn-enterprise">Contact Us</a>
+    </div>
+
+  </div>
+</div>
+
+<!-- Add-Ons -->
+<div class="addons-section">
+  <div style="max-width:900px;margin:0 auto;">
+    <h2 style="font-size:1.6rem;font-weight:800;text-align:center;
+    margin-bottom:8px;">Add-On Services</h2>
+    <p style="text-align:center;color:#64748B;font-size:.9rem;
+    margin-bottom:0;">
+    Enhance your plan with these optional services
+    </p>
+    <div class="addons-grid">
+      <div class="addon-card">
+        <div class="addon-icon">🖥️</div>
+        <div class="addon-name">Setup Service</div>
+        <div class="addon-price">N5,000</div>
+        <div class="addon-desc">One time setup and configuration</div>
+      </div>
+      <div class="addon-card">
+        <div class="addon-icon">👩‍🏫</div>
+        <div class="addon-name">Staff Training</div>
+        <div class="addon-price">N5,000</div>
+        <div class="addon-desc">Per training session</div>
+      </div>
+      <div class="addon-card">
+        <div class="addon-icon">📋</div>
+        <div class="addon-name">Data Entry</div>
+        <div class="addon-price">N3,000</div>
+        <div class="addon-desc">Per term data entry service</div>
+      </div>
+      <div class="addon-card">
+        <div class="addon-icon">🖨️</div>
+        <div class="addon-name">Report Card Print</div>
+        <div class="addon-price">N500</div>
+        <div class="addon-desc">Per student per term</div>
+      </div>
+      <div class="addon-card">
+        <div class="addon-icon">🎨</div>
+        <div class="addon-name">Custom Branding</div>
+        <div class="addon-price">N15,000</div>
+        <div class="addon-desc">One time custom design</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div class="faq-section">
+  <h2>Frequently Asked Questions</h2>
+
+  <div class="faq-item">
+    <div class="faq-question" onclick="toggleFaq(this)">
+      Can I change my plan later?
+      <i class="bi bi-chevron-down"></i>
+    </div>
+    <div class="faq-answer">
+      Yes! You can upgrade or downgrade your plan at any time.
+      Changes take effect immediately.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question" onclick="toggleFaq(this)">
+      How do I pay?
+      <i class="bi bi-chevron-down"></i>
+    </div>
+    <div class="faq-answer">
+      We accept bank transfer, POS and mobile money payments.
+      Contact us on WhatsApp to complete your subscription.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question" onclick="toggleFaq(this)">
+      Is my data safe?
+      <i class="bi bi-chevron-down"></i>
+    </div>
+    <div class="faq-answer">
+      Yes! Your data is stored securely in the cloud and backed up
+      automatically. You can also export all your data to Excel
+      at any time.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question" onclick="toggleFaq(this)">
+      Do you offer a free trial?
+      <i class="bi bi-chevron-down"></i>
+    </div>
+    <div class="faq-answer">
+      Yes! We offer 3 months free trial for new schools.
+      No credit card required. Contact us to get started.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question" onclick="toggleFaq(this)">
+      Can I use it on my phone?
+      <i class="bi bi-chevron-down"></i>
+    </div>
+    <div class="faq-answer">
+      Yes! EduManage Pro works on all devices including phones,
+      tablets and computers. No app download needed.
+    </div>
+  </div>
+
+</div>
+
+<!-- CTA -->
+<div class="cta-section">
+  <h2>Ready to Get Started?</h2>
+  <p>Join schools across Nigeria using EduManage Pro</p>
+  <a href="/login" class="btn-cta">Start Free Today</a>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  &copy; 2026 EduManage Pro. Developed by Ogunwale Olujide — Kebbi State, Nigeria.<br/>
+  Contact: Available on WhatsApp
+</div>
+
+<script>
+var isAnnual = false;
+
+function toggleBilling() {
+  isAnnual = !isAnnual;
+  var toggle = document.getElementById("billing_toggle");
+  var mLabel = document.getElementById("monthly_label");
+  var aLabel = document.getElementById("annual_label");
+
+  if (isAnnual) {
+    toggle.classList.add("annual");
+    mLabel.classList.remove("active");
+    aLabel.classList.add("active");
+  } else {
+    toggle.classList.remove("annual");
+    mLabel.classList.add("active");
+    aLabel.classList.remove("active");
+  }
+
+  document.querySelectorAll(".monthly-price").forEach(function(el) {
+    el.style.display = isAnnual ? "none" : "inline";
+  });
+  document.querySelectorAll(".amount.annual-price").forEach(function(el) {
+    el.style.display = isAnnual ? "inline" : "none";
+  });
+  document.querySelectorAll(".annual-price:not(.amount)").forEach(function(el) {
+    el.style.display = isAnnual ? "block" : "none";
+  });
+}
+
+function toggleFaq(el) {
+  var answer = el.nextElementSibling;
+  var icon   = el.querySelector("i");
+  answer.classList.toggle("show");
+  icon.className = answer.classList.contains("show")
+    ? "bi bi-chevron-up" : "bi bi-chevron-down";
+}
+</script>
+</body>
+</html>
