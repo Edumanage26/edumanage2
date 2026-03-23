@@ -6,6 +6,20 @@ from datetime import date
 dashboard_bp = Blueprint("dashboard", __name__)
 
 
+def fix_row(row):
+    if not row:
+        return None
+    r = dict(row)
+    for key, val in r.items():
+        if hasattr(val, 'strftime'):
+            r[key] = str(val)[:10]
+    return r
+
+
+def fix_rows(rows):
+    return [fix_row(r) for r in rows]
+
+
 @dashboard_bp.route("/dashboard")
 @login_required
 def index():
@@ -18,7 +32,7 @@ def index():
     if school_id:
         cur.execute(
             "SELECT * FROM schools WHERE id = ?", (school_id,))
-        school = cur.fetchone()
+        school = fix_row(cur.fetchone())
 
     if role == "super_admin":
         cur.execute(
@@ -89,11 +103,15 @@ def index():
             FROM attendance WHERE school_id = ?
             GROUP BY date ORDER BY date DESC LIMIT 7
         """, (school_id,))
-    chart_data = cur.fetchall()
+    chart_data = fix_rows(cur.fetchall())
 
     if role == "super_admin":
         cur.execute("""
-            SELECT s.*, c.name AS class_name, sc.name AS school_name
+            SELECT s.id, s.first_name, s.last_name,
+                   s.gender, s.photo, s.photo_url,
+                   s.created_at,
+                   c.name AS class_name,
+                   sc.name AS school_name
             FROM students s
             LEFT JOIN classes c ON c.id = s.class_id
             LEFT JOIN schools sc ON sc.id = s.school_id
@@ -102,25 +120,31 @@ def index():
         """)
     else:
         cur.execute("""
-            SELECT s.*, c.name AS class_name
+            SELECT s.id, s.first_name, s.last_name,
+                   s.gender, s.photo, s.photo_url,
+                   s.created_at,
+                   c.name AS class_name
             FROM students s
             LEFT JOIN classes c ON c.id = s.class_id
             WHERE s.school_id = ? AND s.is_active = 1
             ORDER BY s.created_at DESC LIMIT 5
         """, (school_id,))
-    recent_students = cur.fetchall()
+    recent_students = fix_rows(cur.fetchall())
 
     schools = []
     if role == "super_admin":
         cur.execute("""
-            SELECT sc.*,
-                COUNT(DISTINCT s.id) AS student_count
+            SELECT sc.id, sc.name, sc.logo, sc.logo_url,
+                   sc.address, sc.is_active, sc.created_at,
+                   COUNT(DISTINCT s.id) AS student_count
             FROM schools sc
-            LEFT JOIN students s ON s.school_id = sc.id AND s.is_active = 1
-            GROUP BY sc.id
+            LEFT JOIN students s ON s.school_id = sc.id
+                AND s.is_active = 1
+            GROUP BY sc.id, sc.name, sc.logo, sc.logo_url,
+                     sc.address, sc.is_active, sc.created_at
             ORDER BY sc.created_at DESC LIMIT 5
         """)
-        schools = cur.fetchall()
+        schools = fix_rows(cur.fetchall())
 
     close_db(conn)
     return render_template("dashboard/index.html",
@@ -134,4 +158,3 @@ def index():
                            recent_students=recent_students,
                            schools=schools,
                            today=today)
-
