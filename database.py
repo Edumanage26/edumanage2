@@ -6,16 +6,51 @@ from flask import g
 try:
     import psycopg2
     import psycopg2.extras
+    from psycopg2 import pool
     PSYCOPG2_AVAILABLE = True
 except ImportError:
     PSYCOPG2_AVAILABLE = False
 
-DB_PATH = "school.db"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH  = os.path.join(BASE_DIR, "school.db")
+_pg_pool = None
 
 
 def is_postgres():
     url = os.environ.get("DATABASE_URL", "")
     return bool(url) and "postgres" in url
+
+
+def get_pg_pool():
+    global _pg_pool
+    if _pg_pool is None:
+        try:
+            url = os.environ.get("DATABASE_URL", "")
+            if url.startswith("postgres://"):
+                url = url.replace("postgres://", "postgresql://", 1)
+            result   = urlparse.urlparse(url)
+            host     = result.hostname
+            port     = result.port or 5432
+            database = result.path[1:].split("?")[0]
+            user     = result.username
+            password = result.password
+            print(f"Creating connection pool: {host}:{port}/{database}")
+            _pg_pool = pool.ThreadedConnectionPool(
+                minconn=1,
+                maxconn=5,
+                host=host,
+                port=port,
+                database=database,
+                user=user,
+                password=password,
+                sslmode="require",
+                connect_timeout=30
+            )
+            print("Connection pool created!")
+        except Exception as e:
+            print(f"Pool creation failed: {e}")
+            _pg_pool = None
+    return _pg_pool
 
 
 class SmartCursor:
@@ -42,12 +77,18 @@ class SmartCursor:
 
 
 class SmartConnection:
-    def __init__(self, conn, pg=False):
-        self._conn = conn
-        self._pg   = pg
+    def __init__(self, conn, pg=False, pooled=False):
+        self._conn   = conn
+        self._pg     = pg
+        self._pooled = pooled
 
     def cursor(self):
-        return SmartCursor(self._conn.cursor(), self._pg)
+        if self._pg:
+            cur = self._conn.cursor(
+                cursor_factory=psycopg2.extras.RealDictCursor)
+        else:
+            cur = self._conn.cursor()
+        return SmartCursor(cur, self._pg)
 
     def commit(self):
         self._conn.commit()
@@ -59,7 +100,16 @@ class SmartConnection:
             pass
 
     def close(self):
-        self._conn.close()
+        if self._pooled and _pg_pool:
+            try:
+                _pg_pool.putconn(self._conn)
+            except Exception:
+                pass
+        else:
+            try:
+                self._conn.close()
+            except Exception:
+                pass
 
     def execute(self, query, params=None):
         cur = self.cursor()
@@ -74,47 +124,26 @@ def get_db():
     if "db" not in g:
         if is_postgres() and PSYCOPG2_AVAILABLE:
             try:
-                url = os.environ.get("DATABASE_URL", "")
-                if url.startswith("postgres://"):
-                    url = url.replace("postgres://", "postgresql://", 1)
-
-                result = urlparse.urlparse(url)
-                host     = result.hostname
-                port     = result.port or 5432
-                database = result.path[1:]
-                user     = result.username
-                password = result.password
-
-                print(f"Connecting to PostgreSQL: {host}:{port}/{database}")
-
-                raw = psycopg2.connect(
-                    host=host,
-                    port=port,
-                    database=database,
-                    user=user,
-                    password=password,
-                    cursor_factory=psycopg2.extras.RealDictCursor,
-                    sslmode="require",
-                    connect_timeout=30
-                )
-                raw.autocommit = False
-                g.db = SmartConnection(raw, pg=True)
-                print("PostgreSQL connected!")
-
+                pg_pool = get_pg_pool()
+                if pg_pool:
+                    raw = pg_pool.getconn()
+                    raw.autocommit = False
+                    g.db = SmartConnection(raw, pg=True, pooled=True)
+                else:
+                    raise Exception("Pool not available")
             except Exception as e:
                 print(f"PostgreSQL connection failed: {e}")
                 print("Falling back to SQLite...")
                 raw = sqlite3.connect(
-                    DB_PATH, timeout=30, check_same_thread=False
-                )
+                    DB_PATH, timeout=30, check_same_thread=False)
                 raw.row_factory = sqlite3.Row
                 raw.execute("PRAGMA journal_mode=WAL")
                 raw.execute("PRAGMA synchronous=NORMAL")
                 g.db = SmartConnection(raw, pg=False)
         else:
+            print(f"Using SQLite: {DB_PATH}")
             raw = sqlite3.connect(
-                DB_PATH, timeout=30, check_same_thread=False
-            )
+                DB_PATH, timeout=30, check_same_thread=False)
             raw.row_factory = sqlite3.Row
             raw.execute("PRAGMA journal_mode=WAL")
             raw.execute("PRAGMA synchronous=NORMAL")
@@ -326,7 +355,6 @@ def init_db():
         """)
         conn.commit()
 
-    # Count existing records
     try:
         cur.execute("SELECT COUNT(*) AS cnt FROM users")
         users = cur.fetchone()["cnt"]
