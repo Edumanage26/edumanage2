@@ -77,7 +77,8 @@ def get_db():
                 url = url.replace("postgres://", "postgresql://", 1)
             raw = psycopg2.connect(
                 url,
-                cursor_factory=psycopg2.extras.RealDictCursor
+                cursor_factory=psycopg2.extras.RealDictCursor,
+                sslmode="require"
             )
             raw.autocommit = False
             g.db = SmartConnection(raw, pg=True)
@@ -214,7 +215,6 @@ def init_db():
             except Exception as e:
                 print(f"Table error: {e}")
                 conn.rollback()
-
     else:
         cur._cur.executescript("""
             CREATE TABLE IF NOT EXISTS schools (
@@ -297,4 +297,14 @@ def init_db():
         """)
         conn.commit()
 
-    print("Database ready!")
+    # Count existing records
+    try:
+        cur.execute("SELECT COUNT(*) AS cnt FROM users")
+        users = cur.fetchone()["cnt"]
+        cur.execute("SELECT COUNT(*) AS cnt FROM schools")
+        schools = cur.fetchone()["cnt"]
+        cur.execute("SELECT COUNT(*) AS cnt FROM students")
+        students = cur.fetchone()["cnt"]
+        print(f"Database ready! Users:{users} Schools:{schools} Students:{students}")
+    except Exception as e:
+        print(f"Database ready! Count error: {e}")
