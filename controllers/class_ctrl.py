@@ -15,24 +15,32 @@ def list_classes():
 
     if session.get("role") == "super_admin":
         cur.execute("""
-            SELECT c.*, sc.name AS school_name,
+            SELECT c.id, c.name, c.school_id, c.description,
+                   c.created_at, sc.name AS school_name,
                    COUNT(DISTINCT s.id) AS student_count
             FROM classes c
             LEFT JOIN schools sc ON sc.id = c.school_id
-            LEFT JOIN students s ON s.class_id = c.id AND s.is_active = 1
-            GROUP BY c.id ORDER BY sc.name, c.name
+            LEFT JOIN students s ON s.class_id = c.id
+                AND s.is_active = 1
+            GROUP BY c.id, c.name, c.school_id, c.description,
+                     c.created_at, sc.name
+            ORDER BY sc.name, c.name
         """)
     else:
         cur.execute("""
-            SELECT c.*, COUNT(DISTINCT s.id) AS student_count
+            SELECT c.id, c.name, c.school_id, c.description,
+                   c.created_at,
+                   COUNT(DISTINCT s.id) AS student_count
             FROM classes c
-            LEFT JOIN students s ON s.class_id = c.id AND s.is_active = 1
+            LEFT JOIN students s ON s.class_id = c.id
+                AND s.is_active = 1
             WHERE c.school_id = ?
-            GROUP BY c.id ORDER BY c.name
+            GROUP BY c.id, c.name, c.school_id, c.description,
+                     c.created_at
+            ORDER BY c.name
         """, (school_id,))
     classes = cur.fetchall()
 
-    # Get schools for super admin dropdown
     schools = []
     if session.get("role") == "super_admin":
         cur.execute(
@@ -58,7 +66,6 @@ def add_class():
     conn = get_db()
     cur  = conn.cursor()
 
-    # Determine school_id
     if session.get("role") == "super_admin":
         sid = request.form.get("school_id") or school_id
         if not sid:
@@ -180,4 +187,3 @@ def view_class(class_id):
     close_db(conn)
     return render_template("classes/view.html",
                            cls=cls, students=students)
-
