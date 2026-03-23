@@ -1,5 +1,6 @@
 import os
 import sqlite3
+import urllib.parse as urlparse
 from flask import g
 
 try:
@@ -72,16 +73,44 @@ class SmartConnection:
 def get_db():
     if "db" not in g:
         if is_postgres() and PSYCOPG2_AVAILABLE:
-            url = os.environ.get("DATABASE_URL", "")
-            if url.startswith("postgres://"):
-                url = url.replace("postgres://", "postgresql://", 1)
-            raw = psycopg2.connect(
-                url,
-                cursor_factory=psycopg2.extras.RealDictCursor,
-                sslmode="require"
-            )
-            raw.autocommit = False
-            g.db = SmartConnection(raw, pg=True)
+            try:
+                url = os.environ.get("DATABASE_URL", "")
+                if url.startswith("postgres://"):
+                    url = url.replace("postgres://", "postgresql://", 1)
+
+                result = urlparse.urlparse(url)
+                host     = result.hostname
+                port     = result.port or 5432
+                database = result.path[1:]
+                user     = result.username
+                password = result.password
+
+                print(f"Connecting to PostgreSQL: {host}:{port}/{database}")
+
+                raw = psycopg2.connect(
+                    host=host,
+                    port=port,
+                    database=database,
+                    user=user,
+                    password=password,
+                    cursor_factory=psycopg2.extras.RealDictCursor,
+                    sslmode="require",
+                    connect_timeout=30
+                )
+                raw.autocommit = False
+                g.db = SmartConnection(raw, pg=True)
+                print("PostgreSQL connected!")
+
+            except Exception as e:
+                print(f"PostgreSQL connection failed: {e}")
+                print("Falling back to SQLite...")
+                raw = sqlite3.connect(
+                    DB_PATH, timeout=30, check_same_thread=False
+                )
+                raw.row_factory = sqlite3.Row
+                raw.execute("PRAGMA journal_mode=WAL")
+                raw.execute("PRAGMA synchronous=NORMAL")
+                g.db = SmartConnection(raw, pg=False)
         else:
             raw = sqlite3.connect(
                 DB_PATH, timeout=30, check_same_thread=False
