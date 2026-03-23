@@ -4,8 +4,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-UPLOAD_FOLDER_PHOTOS = os.path.join("static", "uploads", "photos")
-UPLOAD_FOLDER_LOGOS  = os.path.join("static", "uploads", "logos")
+BASE_DIR             = os.path.dirname(os.path.abspath(__file__))
+PROJECT_DIR          = os.path.dirname(BASE_DIR)
+UPLOAD_FOLDER_PHOTOS = os.path.join(PROJECT_DIR, "static", "uploads", "photos")
+UPLOAD_FOLDER_LOGOS  = os.path.join(PROJECT_DIR, "static", "uploads", "logos")
 
 os.makedirs(UPLOAD_FOLDER_PHOTOS, exist_ok=True)
 os.makedirs(UPLOAD_FOLDER_LOGOS,  exist_ok=True)
@@ -24,7 +26,6 @@ def save_photo(file, folder="photos"):
     if not allowed_file(file.filename):
         return None, None
 
-    # Try Cloudinary first
     cloud_name = os.environ.get("CLOUDINARY_CLOUD_NAME", "")
     api_key    = os.environ.get("CLOUDINARY_API_KEY", "")
     api_secret = os.environ.get("CLOUDINARY_API_SECRET", "")
@@ -49,7 +50,6 @@ def save_photo(file, folder="photos"):
         except Exception as e:
             print(f"Cloudinary failed: {e}")
 
-    # Fallback to local storage
     try:
         ext      = file.filename.rsplit(".", 1)[-1].lower()
         filename = uuid.uuid4().hex + "." + ext
@@ -59,7 +59,7 @@ def save_photo(file, folder="photos"):
             path = os.path.join(UPLOAD_FOLDER_PHOTOS, filename)
         file.seek(0)
         file.save(path)
-        print(f"Local OK: {filename}")
+        print(f"Local OK: {path}")
         return filename, None
     except Exception as e:
         print(f"Local save failed: {e}")
